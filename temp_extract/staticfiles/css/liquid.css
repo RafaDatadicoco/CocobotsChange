@@ -1,0 +1,145 @@
+:root{
+  --red:#e11d2e;
+  --ink:#0b1220;
+  --glass: rgba(255,255,255,.58);
+  --stroke: rgba(255,255,255,.55);
+  --shadow: 0 18px 50px rgba(10,20,40,.14);
+  --blur: 18px;
+  --radius: 22px;
+}
+
+*,
+*::before,
+*::after{ box-sizing: border-box; }
+
+html{
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip; /* compatibilidad total */
+}
+
+body{
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  color: var(--ink);
+  background:#fff;
+  overflow-x: clip;
+}
+
+/* Evita que imágenes o elementos inline se salgan */
+img, svg, video, canvas{
+  max-width: 100%;
+  height: auto;
+}
+
+.bg-blobs {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.blob {
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%,
+    rgba(225,29,46,.28),
+    rgba(225,29,46,.06) 55%,
+    transparent 70%);
+  opacity: .7;
+  mix-blend-mode: multiply;
+  /* Sin animación, sin will-change */
+}
+
+.blob.one {
+  top: -180px;
+  left: -160px;
+}
+
+.blob.two {
+  top: 140px;
+  right: -220px;
+}
+
+/* Para que el contenido quede encima de los blobs */
+.page-wrap{
+  position: relative;
+  z-index: 1;
+}
+
+/* Glass */
+.glass{
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  border-radius: var(--radius);
+}
+
+.nav-glass{
+  background: rgba(255,255,255,.5);
+  border-bottom: 1px solid rgba(255,255,255,.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  position: relative;
+  z-index: 5;
+}
+
+.dot{
+  width: 10px; height: 10px; border-radius:999px;
+  background: var(--red);
+  box-shadow: 0 0 0 7px rgba(225,29,46,.12);
+  display:inline-block;
+}
+
+.btn-red{
+  background: var(--red);
+  border-color: var(--red);
+  color:#fff;
+  border-radius:999px;
+  padding:.85rem 1.1rem;
+  box-shadow: 0 14px 30px rgba(225,29,46,.25);
+}
+.btn-red:hover{
+  background:#c51625;
+  border-color:#c51625;
+  color:#fff;
+  transform: translateY(-1px);
+}
+
+.btn-glass{
+  border-radius:999px;
+  padding:.85rem 1.1rem;
+  background: rgba(255,255,255,.55);
+  border: 1px solid rgba(11,18,32,.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Simple chat card */
+.chat{
+  padding: 18px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.msg{
+  padding: 12px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(11,18,32,.08);
+  background: rgba(255,255,255,.62);
+  max-width: 90%;
+  overflow-wrap: anywhere;
+}
+.msg.user{
+  margin-left:auto;
+  background: rgba(225,29,46,.08);
+  border-color: rgba(225,29,46,.22);
+}
+
+@media (prefers-reduced-motion: reduce){
+  .btn-red:hover{ transform:none; }
+}

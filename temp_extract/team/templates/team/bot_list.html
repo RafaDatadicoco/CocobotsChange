@@ -1,0 +1,124 @@
+{% extends "core/base.html" %}
+
+{% block title %}Gestion de bots{% endblock %}
+
+{% block content %}
+<section class="container py-4 py-lg-5">
+
+  <div class="glass p-4 p-lg-5 mb-4">
+    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+      <div>
+        <a href="{% url 'bots:dashboard' %}" class="text-decoration-none small">
+          <i class="bi bi-arrow-left"></i> Volver al dashboard
+        </a>
+        <h1 class="h3 fw-semibold mt-2 mb-2">
+          <i class="bi bi-robot"></i> Gestión de bots
+        </h1>
+        <p class="text-secondary mb-0">
+          Crea los bots que luego usarás en asignación y en webhooks de WhatsApp.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  {% if messages %}
+    <div class="mb-4 d-flex flex-column gap-2">
+      {% for message in messages %}
+        <div class="glass p-3 {% if message.tags == 'error' %}text-danger{% endif %}">
+          {% if message.tags == 'error' %}
+            <i class="bi bi-exclamation-triangle me-2"></i>
+          {% else %}
+            <i class="bi bi-info-circle me-2"></i>
+          {% endif %}
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="row g-4">
+
+    <div class="col-12 col-xl-5">
+      <div class="glass p-4 h-100">
+        <h2 class="h5 fw-semibold mb-3">Crear bot</h2>
+
+        <form method="post" class="d-flex flex-column gap-3">
+          {% csrf_token %}
+
+          {% for field in form %}
+            <div>
+              <label class="form-label fw-semibold" for="{{ field.id_for_label }}">
+                {{ field.label }}
+              </label>
+              {{ field }}
+            </div>
+          {% endfor %}
+
+          {% if form.errors %}
+            <div class="glass p-3 text-danger">
+              <div class="fw-semibold mb-2">
+                <i class="bi bi-exclamation-octagon"></i> Revisa los campos
+              </div>
+              {% for field in form %}
+                {% for error in field.errors %}
+                  <div class="small">{{ error }}</div>
+                {% endfor %}
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <button type="submit" class="btn btn-red">
+            <i class="bi bi-check-circle"></i> Crear bot
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-7">
+      <div class="glass p-4 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h5 fw-semibold">Bots</h2>
+          <span class="text-secondary small">{{ bots|length }} registrados</span>
+        </div>
+
+        <div class="d-flex flex-column gap-3">
+          {% for bot in bots %}
+            <div class="glass p-3">
+              <div class="fw-semibold">
+                <i class="bi bi-robot"></i> {{ bot.name }}
+              </div>
+
+              <div class="text-secondary small">
+                {{ bot.description|truncatechars:120 }}
+              </div>
+
+              <div class="row g-2 mt-2 small text-secondary">
+                <div class="col-12 col-md-6">
+                  <i class="bi bi-hash"></i> bot_external_id: {{ bot.bot_external_id }}
+                </div>
+                <div class="col-12 col-md-6">
+                  <i class="bi bi-telephone"></i> business_phone_number_id: {{ bot.external_phone_number_id|default:"-" }}
+                </div>
+                <div class="col-12 col-md-6">
+                  <i class="bi bi-diagram-3"></i> provider: {{ bot.provider }}
+                </div>
+                <div class="col-12 col-md-6">
+                  <i class="bi bi-chat-dots"></i> channel: {{ bot.channel_type }}
+                </div>
+              </div>
+            </div>
+          {% empty %}
+            <div class="glass p-4 text-center">
+              <div class="h5 fw-semibold mb-2">No hay bots</div>
+              <div class="text-secondary">
+                Crea el primer bot para que los webhooks de n8n puedan resolverlo.
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

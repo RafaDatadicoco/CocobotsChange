@@ -1,0 +1,152 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Cocobots{% endblock %}
+
+{% block navbar_buttons %}
+  <a class="btn btn-glass" href="{% url 'core:login' %}">Iniciar Sesión</a>
+  <a class="btn btn-red" href="{% url 'core:signup' %}">Registrarse</a>
+{% endblock %}
+
+{% block content %}
+  <!-- HERO -->
+  <section class="container py-5 py-lg-6">
+    <div class="row align-items-center g-4 g-lg-5">
+      
+      <div class="col-lg-6">
+        <div class="glass p-4 p-lg-5">
+          
+          <h1 class="display-5 fw-bold mb-3">
+            Chatbots con IA para ventas y soporte
+          </h1>
+
+          <p class="lead text-secondary mb-4">
+            Creamos asistentes inteligentes que responden clientes, capturan leads
+            y automatizan tu atención 24/7 para que tu negocio crezca.
+          </p>
+
+          <div class="d-flex flex-column flex-sm-row gap-3">
+            
+            <a 
+              class="btn btn-red btn-lg"
+              href="mailto:tucorreo@empresa.com?subject=Quiero%20una%20demo%20de%20Cocobots"
+            >
+              Solicitar una demo
+            </a>
+
+            <a class="btn btn-glass btn-lg" href="#benefits">
+              Ver beneficios
+            </a>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="glass p-3 p-md-4">
+          <div class="chat glass p-3">
+            <div class="msg">Hola 👋 ¿Buscas un bot para ventas o soporte?</div>
+            <div class="msg user">Ambos, quiero automatizar mi negocio.</div>
+            <div class="msg">
+              Perfecto. Creamos un chatbot adaptado a tu marca que responde clientes y capta leads automáticamente.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BENEFITS -->
+    <div id="benefits" class="row mt-4 g-3">
+      
+      <div class="col-md-4">
+        <div class="glass p-3 text-center h-100">
+          <div class="fw-semibold">Implementación rápida</div>
+          <div class="text-secondary small">
+            Tu chatbot listo en pocos días.
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="glass p-3 text-center h-100">
+          <div class="fw-semibold">Personalizado a tu marca</div>
+          <div class="text-secondary small">
+            Con el tono, estilo y valores de tu negocio.
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="glass p-3 text-center h-100">
+          <div class="fw-semibold">Más ventas</div>
+          <div class="text-secondary small">
+            Captura leads y responde clientes automáticamente.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="container pb-5">
+    <div class="glass p-4 p-lg-5">
+      
+      <div class="row g-4 align-items-center">
+        
+        <div class="col-lg-6">
+          <h2 class="fw-bold mb-2">Hablemos de tu negocio</h2>
+          <p class="text-secondary mb-0">
+            Escríbenos y te mostramos cómo un chatbot puede ayudarte a vender más
+            y mejorar tu atención al cliente.
+          </p>
+        </div>
+
+        <div class="col-lg-6">
+          
+          <!-- versión simple -->
+          <form onsubmit="sendMail(event)">
+            
+            <div class="mb-2">
+              <input class="form-control form-control-lg" id="name" type="text" placeholder="Tu nombre" required>
+            </div>
+
+            <div class="mb-2">
+              <input class="form-control form-control-lg" id="email" type="email" placeholder="Tu correo" required>
+            </div>
+
+            <div class="mb-2">
+              <textarea class="form-control" id="message" rows="4" placeholder="¿Qué quieres automatizar?" required></textarea>
+            </div>
+
+            <div class="d-grid">
+              <button class="btn btn-red btn-lg" type="submit">
+                Enviar solicitud
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    function sendMail(e) {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const message = document.getElementById("message").value;
+
+      const subject = encodeURIComponent("Solicitud de demo Cocobots");
+      const body = encodeURIComponent(
+        `Nombre: ${name}\nCorreo: ${email}\n\nMensaje:\n${message}`
+      );
+
+      window.location.href = `mailto:tucorreo@empresa.com?subject=${subject}&body=${body}`;
+    }
+  </script>
+
+{% endblock %}

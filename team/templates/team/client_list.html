@@ -1,0 +1,96 @@
+{% extends "core/base.html" %}
+
+{% block title %}Clientes{% endblock %}
+
+{% block content %}
+<section class="container py-4 py-lg-5">
+
+  <div class="glass p-4 p-lg-5 mb-4">
+    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+      <div>
+        <a href="{% url 'bots:dashboard' %}" class="text-decoration-none small">
+          <i class="bi bi-arrow-left"></i> Volver al dashboard
+        </a>
+
+        <h1 class="h3 fw-semibold mt-2 mb-2">
+          <i class="bi bi-people"></i> Clientes
+        </h1>
+
+        <p class="text-secondary">Revisa clientes, usuarios asociados y bots asignados.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="glass p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h5 fw-semibold m-0">Listado de clientes</h2>
+
+      <span class="text-secondary small">
+        {{ client_rows|length }} clientes
+      </span>
+    </div>
+
+    <div class="d-flex flex-column gap-3">
+      {% for row in client_rows %}
+        <a class="glass p-3 text-decoration-none text-dark"
+           href="{% url 'team:client_detail' row.client.id %}">
+
+          <div class="d-flex flex-column flex-md-row align-items-md-center gap-3">
+
+            <!-- info cliente -->
+            <div>
+              <div class="fw-semibold">
+                <i class="bi bi-person"></i>
+                {{ row.client.nombre_cliente }}
+              </div>
+
+              <div class="text-secondary small">
+                <i class="bi bi-envelope"></i>
+                {{ row.client.contacto_principal_email }}
+              </div>
+            </div>
+
+            <!-- bloque derecho -->
+            <div class="d-flex align-items-center gap-4 ms-md-auto client-meta">
+              
+              <div class="text-center">
+                <div class="text-secondary">
+                  <i class="bi bi-robot"></i> Bots
+                </div>
+                <div class="fw-semibold">{{ row.bot_count }}</div>
+              </div>
+
+              <div class="text-center">
+                <span class="status-badge {% if row.client.estado %}status-active{% else %}status-inactive{% endif %}">
+                  {% if row.client.estado %}
+                    Activo
+                  {% else %}
+                    Inactivo
+                  {% endif %}
+                </span>
+              </div>
+
+              <div class="open-indicator sm">
+                <i class="bi bi-arrow-right"></i>
+              </div>
+
+            </div>
+          </div>
+
+        </a>
+
+      {% empty %}
+        <div class="glass p-4 text-center">
+          <div class="h5 fw-semibold mb-2">
+            No hay clientes
+          </div>
+
+          <div class="text-secondary">
+            No existen cuentas de cliente registradas.
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

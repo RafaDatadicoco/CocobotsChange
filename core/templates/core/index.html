@@ -1,0 +1,306 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Cocobots by Datadicoco{% endblock %}
+
+{% block navbar_buttons %}
+<a class="text-gray-600 hover:text-orange-500 font-semibold text-sm transition mx-3"
+  href="{% url 'core:login' %}">Iniciar Sesión</a>
+<a class="bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-bold py-2 px-5 rounded-full shadow-md hover:shadow-lg transition text-sm"
+  href="{% url 'core:signup' %}">Registrarse</a>
+{% endblock %}
+
+{% block content %}
+<style>
+  .nav-glass {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(10px) !important;
+    border-bottom: 1px solid #f1f5f9;
+    box-shadow: none !important;
+  }
+
+  .btn-glass {
+    display: none;
+  }
+
+  .bg-blobs {
+    display: none;
+  }
+
+  body {
+    background-color: #f8fafc;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  .glass {
+    background: white;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  }
+</style>
+<section class="relative pt-20 pb-32 overflow-hidden bg-gradient-to-b from-blue-50/50 to-white">
+  <div class="container mx-auto px-4 max-w-7xl">
+    <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-8">
+      <div class="w-full lg:w-1/2 text-center lg:text-left z-10">
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-100/50 text-orange-600 text-sm font-bold mb-6 border border-orange-200">
+          <i class="bi bi-stars"></i> IA Generativa Avanzada
+        </div>
+        <h1 class="text-4xl lg:text-5xl xl:text-6xl font-extrabold text-[#1e293b] leading-tight mb-6">
+          Respuestas <span
+            class="text-transparent bg-clip-text bg-gradient-to-r from-[#fb923c] to-[#ff7a55]">inteligentes</span><br>
+          para clientes exigentes.
+        </h1>
+        <p class="text-lg text-gray-500 mb-8 max-w-2xl mx-auto lg:mx-0 font-medium leading-relaxed">
+          Centraliza tus conversaciones, capta leads automáticamente y brinda soporte 24/7.
+          Cocobots conecta tu negocio con inteligencias artificiales especializadas que atienden como tú lo harías.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+          <a href="{% url 'core:signup' %}"
+            class="bg-gradient-to-r from-[#fb923c] to-[#ff7a55] hover:opacity-90 text-white font-bold py-3.5 px-8 rounded-full shadow-lg hover:shadow-orange-300/50 transition transform hover:-translate-y-1 text-center">
+            Probar Cocobots Gratis
+          </a>
+          <a href="#demo"
+            class="bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-700 font-bold py-3.5 px-8 rounded-full shadow-sm transition text-center flex items-center justify-center gap-2">
+            <i class="bi bi-play-circle text-xl"></i> Ver Demo
+          </a>
+        </div>
+        <div class="mt-8 flex items-center justify-center lg:justify-start gap-4 text-sm font-bold text-gray-400">
+          <span class="flex items-center gap-1"><i class="bi bi-check-circle-fill text-green-500"></i> Fácil
+            Integración</span>
+          <span class="flex items-center gap-1"><i class="bi bi-check-circle-fill text-green-500"></i> Soporte
+            Humano</span>
+        </div>
+      </div>
+      <div class="w-full lg:w-1/2 relative z-10">
+        <div
+          class="relative bg-white rounded-2xl shadow-2xl border border-gray-100 p-2 transform md:rotate-2 hover:rotate-0 transition duration-500 max-w-lg mx-auto">
+          <div
+            class="bg-gradient-to-r from-orange-500 to-orange-400 rounded-t-xl p-4 flex items-center justify-between text-white">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-bold shadow-sm">CB
+              </div>
+              <div>
+                <div class="font-bold text-sm">Asistente Cocobot</div>
+                <div class="text-xs text-white/90 flex items-center gap-1"><span
+                    class="w-2 h-2 rounded-full bg-green-300 shadow"></span> En línea</div>
+              </div>
+            </div>
+            <i class="bi bi-three-dots-vertical"></i>
+          </div>
+          <div class="bg-gray-50 h-80 p-4 overflow-hidden rounded-b-xl flex flex-col gap-3 text-sm">
+            <div
+              class="self-start bg-white border border-gray-100 shadow-sm p-3 rounded-2xl rounded-tl-sm max-w-[85%] text-gray-700 animate-pulse">
+              ¡Hola! 👋 Bienvenido a nuestro sitio. Soy el asistente virtual, ¿en qué te puedo ayudar para mejorar tus
+              ventas de inmediato?
+            </div>
+            <div class="self-end bg-blue-100 text-blue-900 p-3 rounded-2xl rounded-tr-sm max-w-[85%]">
+              Quiero automatizar mi atención en WhatsApp y la web.
+            </div>
+            <div
+              class="self-start bg-white border border-gray-100 shadow-sm p-3 rounded-2xl rounded-tl-sm max-w-[85%] text-gray-700">
+              ¡Perfecto! 🚀 Puedo conectarme a tus plataformas en minutos. Redirigiré tus consultas técnicas al área
+              correcta y gestionaré las ventas 24/7. ¿Te gustaría ver un caso de uso?
+            </div>
+          </div>
+          <div
+            class="absolute -left-6 top-1/2 bg-white p-3 rounded-xl shadow-lg border border-gray-100 flex items-center gap-3 animate-bounce"
+            style="animation-duration: 3s;">
+            <div class="bg-green-100 text-green-600 w-8 h-8 rounded-full flex items-center justify-center">
+              <i class="bi bi-currency-dollar"></i>
+            </div>
+            <div class="text-sm font-bold text-gray-800">
+              ¡Nuevo Lead!
+              <div class="text-xs text-gray-400 font-medium">Hace justo ahora</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+<section class="py-10 border-y border-gray-100 bg-white">
+  <div class="container mx-auto px-4 text-center">
+    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Omnicanalidad Garantizada: Conectamos
+      donde tus clientes están</p>
+    <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60">
+      <div
+        class="flex items-center gap-2 font-bold text-xl text-gray-600 hover:text-green-500 transition cursor-pointer">
+        <i class="bi bi-whatsapp text-3xl"></i> WhatsApp
+      </div>
+      <div
+        class="flex items-center gap-2 font-bold text-xl text-gray-600 hover:text-[#E1306C] transition cursor-pointer">
+        <i class="bi bi-instagram text-3xl"></i> Instagram
+      </div>
+      <div
+        class="flex items-center gap-2 font-bold text-xl text-gray-600 hover:text-blue-500 transition cursor-pointer">
+        <i class="bi bi-telegram text-3xl"></i> Telegram
+      </div>
+      <div
+        class="flex items-center gap-2 font-bold text-xl text-gray-600 hover:text-gray-900 transition cursor-pointer">
+        <i class="bi bi-browser-chrome text-3xl"></i> Sitios Web
+      </div>
+    </div>
+  </div>
+</section>
+<section class="py-24 bg-gray-50" id="benefits">
+  <div class="container mx-auto px-4 max-w-7xl">
+
+    <div class="text-center mb-16">
+      <h2 class="text-3xl lg:text-4xl font-extrabold text-gray-800 mb-4">Todo el control en un panel visual</h2>
+      <p class="text-gray-500 max-w-2xl mx-auto font-medium">Cocobots te ofrece un dashboard profesional, permitiéndote
+        no solo crear bots, sino auditar, analizar e interferir en las conversaciones cuando sea necesario.</p>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-12 items-center">
+      <div class="w-full lg:w-1/3 flex flex-col gap-8">
+
+        <div
+          class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:border-orange-300 transition-colors group">
+          <div
+            class="w-12 h-12 rounded-xl bg-orange-100 text-orange-500 flex items-center justify-center text-xl font-bold mb-4 group-hover:scale-110 transition">
+            <i class="bi bi-robot"></i>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mb-2">Entrenamiento Preciso</h3>
+          <p class="text-gray-500 text-sm leading-relaxed">Sube PDFs, FAQs o el enlace de tu web. Nuestra IA aprenderá
+            de tu documentación y adoptará el tono, la misión y los valores de tu empresa.</p>
+        </div>
+
+        <div
+          class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:border-orange-300 transition-colors group">
+          <div
+            class="w-12 h-12 rounded-xl bg-blue-100 text-blue-500 flex items-center justify-center text-xl font-bold mb-4 group-hover:scale-110 transition">
+            <i class="bi bi-chat-dots"></i>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mb-2">Transferencia a Humanos</h3>
+          <p class="text-gray-500 text-sm leading-relaxed">La IA sabe cuándo no tiene la respuesta o cuándo el cliente
+            pide hablar con una persona. Recibirás una alerta para tomar el control en el momento exacto.</p>
+        </div>
+
+        <div
+          class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:border-orange-300 transition-colors group">
+          <div
+            class="w-12 h-12 rounded-xl bg-purple-100 text-purple-500 flex items-center justify-center text-xl font-bold mb-4 group-hover:scale-110 transition">
+            <i class="bi bi-graph-up-arrow"></i>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mb-2">Analíticas Avanzadas</h3>
+          <p class="text-gray-500 text-sm leading-relaxed">Conoce el volumen de consultas de hoy, leads generados y
+            tiempo de ahorro, todo con gráficas elegantes desde tu Dashboard administrativo.</p>
+        </div>
+
+      </div>
+      <div class="w-full lg:w-2/3 flex flex-col gap-6">
+        <div
+          class="rounded-2xl overflow-hidden shadow-2xl border border-gray-100 hover:shadow-orange-200/50 transition duration-500 transform hover:-translate-y-1">
+          <div class="bg-gray-100 border-b border-gray-200 p-3 flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-red-400"></div>
+            <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+            <div class="w-3 h-3 rounded-full bg-green-400"></div>
+            <div
+              class="ml-4 bg-white px-4 py-1 text-xs text-gray-400 rounded-md font-mono flex-grow text-center max-w-sm mx-auto shadow-sm">
+              dashboard.datadicoco.com
+            </div>
+          </div>
+          <img src="{% static 'img/dashboard_mockup.png' %}" alt="Dashboard Mockup" class="w-full h-auto object-cover">
+        </div>
+        <div
+          class="rounded-2xl overflow-hidden shadow-2xl border border-gray-100 hover:shadow-orange-200/50 transition duration-500 transform hover:-translate-y-1 w-3/4 self-end -mt-16 relative z-10">
+          <div class="bg-gray-100 border-b border-gray-200 p-2 flex items-center gap-2">
+            <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+            <div
+              class="ml-3 bg-white px-3 py-0.5 text-[0.65rem] text-gray-400 rounded font-mono flex-grow text-center max-w-[200px] mx-auto shadow-sm">
+              login.datadicoco.com
+            </div>
+          </div>
+          <img src="{% static 'img/login_mockup.png' %}" alt="Login Mockup" class="w-full h-auto object-cover">
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+<section id="demo" class="py-24 bg-gray-50 relative overflow-hidden">
+  <div class="absolute -right-20 -top-20 text-orange-200 opacity-20" style="transform: rotate(-15deg);">
+    <i class="bi bi-chat-quote-fill" style="font-size: 30rem;"></i>
+  </div>
+
+  <div class="container mx-auto px-4 max-w-5xl relative z-10 w-full mb-8">
+    <div class="bg-white rounded-3xl p-8 lg:p-12 shadow-xl border border-gray-100">
+
+      <div class="flex flex-col md:flex-row gap-12 items-center">
+        <div class="w-full md:w-1/2">
+          <h2 class="text-3xl font-extrabold mb-4 text-gray-800 leading-tight">Configura tu asistente hoy mismo.</h2>
+          <p class="text-gray-500 mb-8 font-medium">Contáctanos. Cuéntanos qué procesos quieres automatizar y nuestro
+            equipo armará una solución que se conectará con tus servicios actuales de inmediato.</p>
+
+          <div class="space-y-4">
+            <div class="flex items-center gap-3 text-sm font-bold text-gray-700">
+              <div
+                class="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center text-lg"><i
+                  class="bi bi-headset"></i></div>
+              Asesoría Gratuita Inmediata
+            </div>
+            <div class="flex items-center gap-3 text-sm font-bold text-gray-700">
+              <div
+                class="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center text-lg"><i
+                  class="bi bi-magic"></i></div>
+              Setup Configurado por Expertos
+            </div>
+          </div>
+        </div>
+
+        <div class="w-full md:w-1/2">
+          <form onsubmit="sendMail(event)" class="bg-gray-50 p-6 rounded-2xl shadow-inner border border-gray-200">
+            <h3 class="font-bold text-gray-800 text-lg mb-4 text-center">Solicítanos una Demo</h3>
+
+            <div class="mb-4">
+              <input
+                class="w-full bg-white border border-gray-200 text-gray-800 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block p-3 shadow-sm"
+                id="name" type="text" placeholder="Tu Nombre o Empresa" required>
+            </div>
+
+            <div class="mb-4">
+              <input
+                class="w-full bg-white border border-gray-200 text-gray-800 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block p-3 shadow-sm"
+                id="email" type="email" placeholder="Correo Electrónico" required>
+            </div>
+
+            <div class="mb-4">
+              <textarea
+                class="w-full bg-white border border-gray-200 text-gray-800 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block p-3 shadow-sm"
+                id="message" rows="3" placeholder="¿Qué canales deseas automatizar? (Wa, Ig, Web)" required></textarea>
+            </div>
+
+            <button
+              class="w-full text-white bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:ring-orange-300 font-bold rounded-lg text-sm px-5 py-3.5 text-center transition shadow-md hover:shadow-lg"
+              type="submit">
+              Enviar Solicitud
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  function sendMail(e) {
+    e.preventDefault();
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const message = document.getElementById("message").value;
+
+    const subject = encodeURIComponent("Quiero implementar Cocobots en mi empresa");
+    const body = encodeURIComponent(
+      `Hola equipo de Datadicoco,\n\nSoy ${name} (${email}).\n\nEstoy interesado en automatizar:\n${message}\n\nAguardamos su contacto.`
+    );
+
+    window.location.href = `mailto:contacto@datadicoco.com?subject=${subject}&body=${body}`;
+  }
+</script>
+
+{% endblock %}

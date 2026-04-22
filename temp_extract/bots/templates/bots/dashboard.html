@@ -1,0 +1,491 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<style>
+/* Reset Base Layout Wrapper */
+nav.navbar, footer, .bg-blobs { display: none !important; }
+main.container { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+body { background-color: #f8fafc !important; margin: 0; padding: 0; min-height: 100vh; font-family: 'Inter', system-ui, sans-serif; overflow: hidden; }
+.page-wrap { min-height: unset !important; display: block; }
+a { text-decoration: none; }
+
+/* ======== Dashboard Layout ======== */
+.dashboard-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* Sidebar / Aside */
+.sidebar {
+  width: 260px;
+  background-color: #ffffff;
+  border-right: 1px solid #edf2f7;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  z-index: 50;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Área Principal de Contenido */
+.main-wrapper {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: #f9fafb;
+  width: calc(100% - 260px); /* Desktop width */
+}
+
+.dash-header {
+  height: 76px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #edf2f7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  flex-shrink: 0;
+  z-index: 5;
+}
+
+.main-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 2rem;
+}
+
+/* Elementos del Menú Lateral */
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0.2rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+.nav-item i {
+  font-size: 1.1rem;
+}
+.nav-item:hover {
+  background-color: #fff4ed;
+  color: #FF9B71;
+}
+.nav-item.active {
+  background-color: #FF9B71;
+  color: white;
+  box-shadow: 0 4px 10px -2px rgba(255,155,113,0.4);
+}
+
+/* Tarjetas y UI Adicional */
+.welcome-banner {
+  background: linear-gradient(135deg, #fb923c 0%, #ff7a55 100%);
+  border-radius: 1rem;
+  padding: 2rem 2.5rem;
+  color: white;
+  box-shadow: 0 10px 25px -5px rgba(255,122,85,0.3);
+}
+
+.stat-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.2rem;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+/* Overlay Sidebar en capa oscura para celular */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 40;
+  transition: opacity 0.3s;
+}
+
+/* Estilos Mobile (Ajustes para un Responsivo Perfecto) */
+@media (max-width: 768px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .sidebar-overlay.open {
+    display: block;
+  }
+  
+  .main-wrapper {
+    width: 100%;
+  }
+
+  .dash-header {
+    padding: 0 1rem;
+    height: 65px;
+  }
+  
+  .main-content {
+    padding: 1rem;
+  }
+  
+  .welcome-banner {
+    padding: 1.5rem 1.2rem;
+    align-items: flex-start;
+  }
+
+  /* Reduce panel height limit en movil para no dejar scroll atrapado */
+  .panel-container {
+    height: 400px;
+  }
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+</style>
+
+<div class="dashboard-layout relative">
+
+  <!-- ================= CAPA OSCURA PARA SIDEBAR EN MÓVIL ================= -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileMenu()"></div>
+
+  <!-- ================= ASIDE / BARRA LATERAL ================= -->
+  <aside class="sidebar" id="sidebar">
+    <!-- Contenedor Logo con Botón Cerrar (Solo Móvil) -->
+    <div class="h-[76px] flex items-center justify-between px-6 border-b border-gray-100">
+      <div class="flex items-center">
+        <img src="{% static 'img/logo.png' %}" alt="Datadicoco" class="h-8 object-contain" onerror="this.src='https://cdn-icons-png.flaticon.com/512/10412/10412629.png'">
+        <h2 class="text-xl font-bold text-gray-800 ml-2 pt-1" style="color: #ea4335;">Datadicoco</h2>
+      </div>
+      <!-- Botón cerrar menú móvil -->
+      <button class="md:hidden text-gray-400 hover:text-red-500" onclick="toggleMobileMenu()">
+        <i class="bi bi-x-lg text-xl"></i>
+      </button>
+    </div>
+    
+    <!-- Enlaces de Navegación -->
+    <div class="flex-grow py-6 overflow-y-auto">
+      <div class="px-7 mb-2 text-[0.65rem] font-bold text-gray-400 uppercase tracking-widest bg-white">Principal</div>
+      <a href="{% url 'bots:dashboard' %}" class="nav-item active">
+        <i class="bi bi-house-door me-3"></i> Inicio
+      </a>
+      {% if can_manage_clients %}
+      <a href="{% url 'team:bot_list' %}" class="nav-item">
+        <i class="bi bi-robot me-3"></i> Mis Chatbots
+      </a>
+      {% endif %}
+      <a href="#" class="nav-item flex justify-between">
+        <div class="flex"><i class="bi bi-chat-text me-3"></i> Conversaciones</div>
+        <span class="bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full text-[0.65rem] font-bold ml-2">{{ stats.conversations|default:'0' }}</span>
+      </a>
+      <a href="#" class="nav-item">
+        <i class="bi bi-bar-chart me-3"></i> Estadísticas
+      </a>
+      
+      {% if can_manage_users or can_manage_clients %}
+      <div class="px-7 mb-2 mt-8 text-[0.65rem] font-bold text-gray-400 uppercase tracking-widest bg-white">Sistemas</div>
+      <a href="{% url 'team:client_list' %}" class="nav-item">
+        <i class="bi bi-people me-3"></i> Facturación
+      </a>
+      {% if can_manage_users %}
+      <a href="{% url 'team:user_management' %}" class="nav-item">
+        <i class="bi bi-person-badge me-3"></i> Usuarios
+      </a>
+      {% endif %}
+      <a href="#" class="nav-item">
+        <i class="bi bi-gear me-3"></i> Configuración
+      </a>
+      {% endif %}
+    </div>
+  </aside>
+
+  <!-- ================= LAYOUT PRINCIPAL (HEADER + DATA) ================= -->
+  <div class="main-wrapper">
+    <!-- ================= HEADER SUPERIOR ================= -->
+    <header class="dash-header">
+      
+      <!-- Lado Izquierdo Header (Menú Celular y Título) -->
+      <div class="flex items-center gap-3 md:gap-4 w-full md:w-auto">
+        <!-- Botón menú móvil -->
+        <button class="md:hidden text-gray-500 hover:text-orange-500 transition focus:outline-none p-1" onclick="toggleMobileMenu()">
+          <i class="bi bi-list text-[1.6rem]"></i>
+        </button>
+        <!-- Título -->
+        <h1 class="text-[1.2rem] md:text-[1.35rem] font-extrabold text-gray-800 tracking-tight flex-shrink-0">Dashboard</h1>
+      </div>
+
+      <!-- Barra de Búsqueda Centrada (Se muestra parcial en movil) -->
+      <div class="hidden md:flex flex-grow max-w-xl mx-4">
+        <div class="relative w-full">
+          <i class="bi bi-search absolute left-4 top-1/2 transform -translate-y-1/2 text-orange-400"></i>
+          <input type="text" placeholder="Buscar clientes, bots..." 
+                 class="w-full pl-11 pr-4 py-[0.55rem] bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-300 text-[0.85rem] text-gray-700 transition shadow-sm">
+        </div>
+      </div>
+
+      <!-- Lado Derecho Header (Acciones de Usuario) -->
+      <div class="flex items-center gap-2 md:gap-3 flex-shrink-0 ml-auto md:ml-0">
+        <!-- Íconos de Herramientas (Solo los principales para movil) -->
+        <button class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center hover:bg-orange-200 transition">
+          <i class="bi bi-sun-fill text-sm md:text-base"></i>
+        </button>
+        <button class="hidden sm:flex w-8 h-8 md:w-10 md:h-10 rounded-full bg-orange-50 text-orange-500 items-center justify-center hover:bg-orange-200 transition">
+          <i class="bi bi-gear-fill text-sm md:text-base"></i>
+        </button>
+        <button class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center relative hover:bg-orange-200 transition mr-1 md:mr-0">
+          <i class="bi bi-bell-fill text-sm md:text-base"></i>
+          <span class="absolute top-[0px] right-[0px] w[9px] h-[9px] md:w-[11px] md:h-[11px] bg-red-500 rounded-full border-2 border-white"></span>
+        </button>
+
+        <div class="hidden md:block w-px h-6 bg-gray-200 mx-1"></div>
+
+        <!-- Perfil con Logout -->
+        <div class="flex items-center gap-2 md:gap-3 cursor-pointer group">
+          <div class="bg-gray-200 w-[32px] h-[32px] md:w-[38px] md:h-[38px] rounded-full flex items-center justify-center text-gray-600 font-bold overflow-hidden shadow-sm flex-shrink-0">
+            {% if request.user.first_name %}
+              {{ request.user.first_name|first|upper }}
+            {% else %}
+              <i class="bi bi-person-fill text-lg mt-1"></i>
+            {% endif %}
+          </div>
+          <div class="hidden lg:block text-[0.85rem] leading-tight mr-1">
+            <div class="font-bold text-gray-800">{{ request.user.first_name|default:'Usuario' }}</div>
+            <div class="text-[0.65rem] text-gray-400 truncate max-w-[120px]">{{ request.user.email }}</div>
+          </div>
+          <!-- Formulario de cierre silencioso pero funcional -->
+          <form method="post" action="{% url 'core:logout' %}" style="display: inline-block;">
+            {% csrf_token %}
+            <button type="submit" class="text-gray-400 hover:text-red-500 transition py-1 md:px-1" title="Cerrar sesión">
+              <i class="bi bi-box-arrow-right text-[1.1rem]"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    </header>
+
+    <!-- ================= CONTENIDO PRINCIPAL ================= -->
+    <main class="main-content">
+      <div class="max-w-7xl mx-auto pb-8">
+        
+        <!-- BANNER DE BIENVENIDA -->
+        <div class="welcome-banner mb-6 flex flex-col md:flex-row gap-5 items-start md:items-center justify-between">
+          <div class="w-full md:w-auto">
+            <h2 class="text-2xl md:text-[1.8rem] tracking-tight font-extrabold mb-1">
+              ¡Buenos días{% if request.user.first_name %}, {{ request.user.first_name }}{% endif %}!
+            </h2>
+            <p class="text-white/90 text-[0.85rem] md:text-[0.9rem] font-medium opacity-90 leading-snug max-w-lg">
+              {% if client_account %}
+                Aquí tienes un resumen de la cuenta <b>{{ client_account.nombre_cliente }}</b> el día de hoy.
+              {% else %}
+                Visualizando sistema de mando general (sin restricciones).
+              {% endif %}
+            </p>
+          </div>
+          
+          <!-- Botonera de stats rapidas dentro del banner -->
+          <div class="flex gap-4 md:gap-8 w-full md:w-auto mt-2 md:mt-0 bg-white/10 px-6 py-3 rounded-xl backdrop-blur-sm border border-white/20 shadow-inner overflow-hidden justify-around">
+            <div class="text-center">
+              <div class="text-2xl md:text-3xl font-extrabold tracking-tight">{{ stats.bots|default:'0' }}</div>
+              <div class="text-[0.6rem] md:text-[0.65rem] text-white/90 uppercase font-bold tracking-widest mt-1">Bots Activos</div>
+            </div>
+            <div class="w-px bg-white/20 h-10 my-auto"></div>
+            <div class="text-center">
+              <div class="text-2xl md:text-3xl font-extrabold tracking-tight">{{ stats.conversations|default:'0' }}</div>
+              <div class="text-[0.6rem] md:text-[0.65rem] text-white/90 uppercase font-bold tracking-widest mt-1">Mensajes Hoy</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TARJETAS DE MÉTRICAS (Grid Adaptativo) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
+          <div class="stat-card">
+            <div class="flex flex-col sm:flex-row sm:justify-between items-start gap-2">
+              <div class="order-2 sm:order-1">
+                <div class="text-2xl sm:text-3xl font-extrabold text-gray-800 tracking-tight">{{ stats.bots }}</div>
+                <div class="text-gray-400 text-[0.7rem] sm:text-[0.8rem] font-bold mt-0.5">Bots visibles</div>
+              </div>
+              <div class="icon-circle text-orange-500 bg-orange-50 order-1 sm:order-2"><i class="bi bi-robot"></i></div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="flex flex-col sm:flex-row sm:justify-between items-start gap-2">
+              <div class="order-2 sm:order-1">
+                <div class="text-2xl sm:text-3xl font-extrabold text-gray-800 tracking-tight">{{ stats.conversations }}</div>
+                <div class="text-gray-400 text-[0.7rem] sm:text-[0.8rem] font-bold mt-0.5">Conversaciones</div>
+              </div>
+              <div class="icon-circle text-blue-500 bg-blue-50 order-1 sm:order-2"><i class="bi bi-chat-dots"></i></div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="flex flex-col sm:flex-row sm:justify-between items-start gap-2">
+              <div class="order-2 sm:order-1">
+                <div class="text-2xl sm:text-3xl font-extrabold text-gray-800 tracking-tight">{{ stats.messages }}</div>
+                <div class="text-gray-400 text-[0.7rem] sm:text-[0.8rem] font-bold mt-0.5">Mjs totales</div>
+              </div>
+              <div class="icon-circle text-green-500 bg-green-50 order-1 sm:order-2"><i class="bi bi-check2-all"></i></div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="flex flex-col sm:flex-row sm:justify-between items-start gap-2">
+              <div class="order-2 sm:order-1">
+                <div class="text-2xl sm:text-3xl font-extrabold text-gray-800 tracking-tight">{{ stats.clients }}</div>
+                <div class="text-gray-400 text-[0.7rem] sm:text-[0.8rem] font-bold mt-0.5">Visitas únicas</div>
+              </div>
+              <div class="icon-circle text-purple-500 bg-purple-50 order-1 sm:order-2"><i class="bi bi-people"></i></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANELES DE INFORMACIÓN Y CHAT (Responden fluidamente) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- COLUMNA IZQ: BOTS -->
+          <div class="lg:col-span-5 bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col h-[400px] panel-container lg:h-[500px]">
+            <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 rounded-t-xl shrink-0">
+              <h3 class="font-extrabold text-gray-800 text-[0.95rem]">Chats Registrados / Bots</h3>
+              <div class="bg-gray-100 text-gray-600 text-[0.65rem] px-2 py-1 rounded-full font-bold shadow-[0_1px_2px_rgba(0,0,0,0.05)]">Total: {{ bots|length }}</div>
+            </div>
+            
+            <div class="p-3 overflow-y-auto flex-grow h-full bg-[#fdfdfd]">
+              <!-- Buscador -->
+              <div class="relative mb-3 px-1">
+                <i class="bi bi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs"></i>
+                <input type="text" placeholder="Buscar bot..." class="w-full pl-8 pr-3 py-1.5 bg-gray-100/50 border border-gray-200 rounded text-xs focus:outline-none focus:border-orange-300">
+              </div>
+
+              {% if bots %}
+                <div class="flex flex-col gap-1.5 pb-2">
+                  {% for bot in bots %}
+                  <a href="{% url 'bots:detail' bot.id %}" class="flex items-center p-2.5 sm:p-3 rounded-lg border border-transparent hover:border-orange-100 hover:bg-orange-50/50 transition group cursor-pointer">
+                    <div class="w-[36px] h-[36px] sm:w-[40px] sm:h-[40px] rounded-full bg-gradient-to-tr from-orange-400 to-orange-300 text-white flex items-center justify-center font-bold text-sm shadow-sm flex-shrink-0">
+                      {{ bot.name|first|upper }}
+                    </div>
+                    <div class="ml-3 flex-grow min-w-0">
+                      <div class="flex justify-between items-start">
+                        <div class="font-extrabold text-[0.8rem] sm:text-[0.85rem] text-gray-800 group-hover:text-orange-600 transition truncate">{{ bot.name }}</div>
+                        <div class="w-[7px] h-[7px] rounded-full mt-1.5 flex-shrink-0 shadow-sm {% if bot.status == 'ACTIVE' %}bg-green-500 shadow-[0_0_5px_rgba(34,197,94,0.4)]{% else %}bg-gray-300{% endif %}"></div>
+                      </div>
+                      <div class="text-[0.65rem] sm:text-[0.7rem] text-gray-400 truncate w-full pr-1" title="{{ bot.description }}">{{ bot.description|default:'Sin descripción asignada' }}</div>
+                    </div>
+                  </a>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div class="flex flex-col items-center justify-center h-full text-center p-6 text-gray-400 opacity-80">
+                  <i class="bi bi-robot text-3xl mb-2 text-gray-300"></i>
+                  <p class="text-[0.75rem] font-medium">No hay bots visibles en tu cuenta todavía.</p>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- COLUMNA DER: CONVERSACIONES RECIENTES (Chat Simulado) -->
+          <div class="lg:col-span-7 bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col h-[450px] panel-container lg:h-[500px]">
+            <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 rounded-t-xl shrink-0">
+              <h3 class="font-extrabold text-gray-800 text-[0.95rem] truncate pr-2">Visor <span class="text-orange-500 font-normal shadow-sm">| Recientes</span></h3>
+              <div class="flex gap-1.5 shrink-0">
+                <button class="w-7 h-7 sm:w-8 sm:h-8 rounded border border-gray-200 text-gray-500 hover:bg-gray-50 flex items-center justify-center bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]"><i class="bi bi-search text-xs"></i></button>
+                <button class="w-7 h-7 sm:w-8 sm:h-8 rounded border border-gray-200 text-gray-500 hover:bg-gray-50 flex items-center justify-center bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]"><i class="bi bi-download text-xs"></i></button>
+                <button class="w-7 h-7 sm:w-8 sm:h-8 rounded border border-gray-200 text-gray-500 hover:bg-gray-50 flex items-center justify-center bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]"><i class="bi bi-three-dots-vertical text-xs"></i></button>
+              </div>
+            </div>
+            
+            <div class="flex-grow overflow-y-auto px-2 py-2 sm:px-3 sm:py-3 bg-[#fdfdfd]">
+              {% if recent_conversations %}
+                <div class="flex flex-col divide-y divide-gray-50/50 gap-2">
+                  {% for conversation in recent_conversations %}
+                    <div class="p-3 sm:p-4 bg-white rounded-lg border border-gray-50 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] hover:bg-orange-50/20 hover:border-orange-100/50 transition-all flex flex-col relative group">
+                      
+                      <div class="flex items-start gap-3 sm:gap-4">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center font-bold text-xs sm:text-sm flex-shrink-0 border border-blue-100/50 mt-1">
+                          {{ conversation.end_user.display_name|first|upper|default:"U" }}
+                        </div>
+                        <div class="flex-grow min-w-0 pr-1">
+                          <div class="flex justify-between items-start mb-0.5">
+                            <div class="font-extrabold text-[0.85rem] sm:text-[0.9rem] text-gray-800 truncate pr-2">
+                              {{ conversation.end_user.display_name|default:"Usuario Anónimo" }}
+                            </div>
+                            <div class="text-[0.65rem] text-gray-400 whitespace-nowrap ml-1 font-medium bg-gray-50 px-1.5 py-0.5 rounded shadow-inner">
+                              {{ conversation.last_activity_at|date:"d/m M - H:i" }}
+                            </div>
+                          </div>
+                          
+                          <div class="text-[0.65rem] sm:text-[0.7rem] text-gray-500 my-1 truncate bg-gray-50 max-w-max px-2 py-[3px] rounded border border-gray-100 flex items-center">
+                            <i class="bi bi-robot mr-1 opacity-50"></i> <span class="font-bold text-gray-600 truncate max-w-[120px] sm:max-w-[180px]">{{ conversation.bot.name }}</span>
+                          </div>
+                          
+                          <div class="mt-2 sm:mt-3 mb-1 text-right sm:text-left">
+                            <a href="{% url 'bots:conversation_detail' conversation.id %}" class="inline-flex items-center justify-center text-[0.7rem] sm:text-[0.75rem] font-bold text-white bg-orange-500 hover:bg-orange-600 transition px-3 py-1.5 rounded-full shadow-[0_2px_5px_rgba(255,155,113,0.3)] hover:-translate-y-[1px]">
+                              Ver Transcripción Completa <i class="bi bi-chevron-right ml-1 text-[0.6rem] font-bold"></i>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div class="flex flex-col items-center justify-center h-full text-center p-6 text-gray-400 bg-gray-50/30 rounded-lg m-2 border border-gray-100/50">
+                  <div class="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center mb-3 shadow-[0_4px_10px_rgba(0,0,0,0.03)] border border-gray-100">
+                    <i class="bi bi-chat-dots text-2xl text-orange-200"></i>
+                  </div>
+                  <p class="text-[0.8rem] font-extrabold text-gray-500">Bandeja Vacía</p>
+                  <p class="text-[0.7rem] mt-1 text-gray-400">Aún no hay mensajes activos.</p>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  // Script para manejar el comportamiento del menú lateral y de responsividad sin alterar el backend
+  function toggleMobileMenu() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+  }
+</script>
+{% endblock %}

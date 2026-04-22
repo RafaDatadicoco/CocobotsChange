@@ -1,0 +1,212 @@
+:root{
+  --red:#f24c31;
+  --ink:#0b1220;
+  --glass: rgba(255,255,255,.58);
+  --stroke: rgba(255,255,255,.55);
+  --shadow: 0 18px 50px rgba(10,20,40,.14);
+  --blur: 18px;
+  --radius: 22px;
+}
+
+body{
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  color: var(--ink);
+  background:#fff;
+}
+
+.blob{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 800px;
+  height: 800px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle,
+    rgba(225,29,46,0.20) 0%,
+    rgba(225,29,46,0.08) 50%,
+    transparent 70%
+  );
+
+  filter: blur(25px);
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Glass */
+.glass{
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  border-radius: var(--radius);
+}
+
+.nav-glass{
+  background: rgba(255,255,255,.5);
+  border-bottom: 1px solid rgba(255,255,255,.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  z-index: 9999; /* Remove the duplicate */
+}
+
+.dot{
+  width: 10px; height: 10px; border-radius:999px;
+  background: var(--red);
+  box-shadow: 0 0 0 7px rgba(225,29,46,.12);
+  display:inline-block;
+}
+
+.btn-red{
+  background: var(--red);
+  border-color: var(--red);
+  color:#fff;
+  border-radius:999px;
+  padding:.85rem 1.1rem;
+  box-shadow: 0 14px 30px rgba(225,29,46,.25);
+}
+.btn-red:hover{
+  background:#c51625;
+  border-color:#c51625;
+  color:#fff;
+  transform: translateY(-1px);
+}
+
+.btn-glass{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;  
+  border-radius:999px;
+  padding:.85rem 1.1rem;
+  background: rgba(255,255,255,.55);
+  border: 1px solid rgba(11,18,32,.25);
+  color: var(--ink);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  transition: all .25s ease;
+}
+
+/* Hover → modo danger */
+.btn-glass:hover{
+  color: var(--red);
+  border-color: var(--red);
+  background: rgba(225,29,46,.08);
+  box-shadow: 0 10px 25px rgba(225,29,46,.15);
+  transform: translateY(-2px);
+}
+
+/* Active (click) */
+.btn-glass:active{
+  transform: translateY(0);
+  box-shadow: 0 5px 15px rgba(225,29,46,.12);
+}
+
+/* Simple chat card */
+.chat{
+  padding: 18px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.msg{
+  padding: 12px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(11,18,32,.08);
+  background: rgba(255,255,255,.62);
+  max-width: 90%;
+}
+.msg.user{
+  margin-left:auto;
+  background: rgba(225,29,46,.08);
+  border-color: rgba(225,29,46,.22);
+}
+
+/* Para que el contenido quede encima de los blobs */
+.page-wrap{
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .btn-red:hover{ transform:none; }
+}
+
+.next {
+  font-size: 24px;
+  color: var(--red);
+}
+
+/* Base status */
+.status-badge{
+  display:inline-block;
+  padding: .35rem .7rem;
+  border-radius: 999px;
+  font-size: .75rem;
+  font-weight: 500;
+
+  background: rgba(255,255,255,.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  border: 1px solid rgba(11,18,32,.15);
+  transition: all .2s ease;
+}
+
+/* Activo (verde) */
+.status-active{
+  color: #05827a;
+  border-color: #05827a;
+}
+
+/* Inactivo (rojo) */
+.status-inactive{
+  color: var(--red);
+  border-color: var(--red);
+}
+
+.open-indicator{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  font-size: 2.5rem;
+  color: #05827a;
+
+  width: 65px;
+  height: 65px;
+  border-radius: 999px;
+
+  background: rgba(22,163,74,.10);
+  border: 1px solid rgba(22,163,74,.22);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  transition: all .25s ease;
+}
+
+a.glass:hover .open-indicator{
+  color: #fff;
+  background: #16a34a;
+  border-color: #16a34a;
+  transform: scale(1.08);
+  box-shadow: 0 10px 24px rgba(22,163,74,.28);
+}
+
+/* Variante pequeña */
+.open-indicator.sm{
+  width: 32px;
+  height: 32px;
+  font-size: 1.2rem;
+}
+
+a.glass:hover{
+  text-decoration: none;
+}

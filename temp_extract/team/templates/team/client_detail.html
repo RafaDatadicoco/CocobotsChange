@@ -1,0 +1,171 @@
+{% extends "core/base.html" %}
+
+{% block title %}Detalle del cliente{% endblock %}
+
+{% block content %}
+<section class="container py-4 py-lg-5">
+
+  <div class="glass p-4 p-lg-5 mb-4">
+    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center">
+      <div>
+        <a href="{% url 'team:client_list' %}" class="text-decoration-none small">
+          <i class="bi bi-arrow-left"></i> Volver a clientes
+        </a>
+
+        <h1 class="h3 fw-semibold mt-2 mb-1">
+          <i class="bi bi-person"></i> {{ client_account.nombre_cliente }}
+        </h1>
+
+        <p class="text-secondary">
+          <i class="bi bi-envelope"></i> {{ client_account.contacto_principal_email }}
+        </p>
+
+        <div class="d-flex flex-column gap-2">
+          {% for membership in memberships %}
+            <div class="d-flex align-items-center flex-wrap">
+              <span class="text-secondary small">
+                <i class="bi bi-person-badge"></i> Rol sistema: {{ membership.user.role }}
+              </span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="d-flex flex-column align-items-lg-end">
+        <span class="text-secondary small mb-2">
+          <i class="bi bi-calendar3"></i> Creado: {{ client_account.created_at|date:"d/m/Y" }}
+        </span>
+        <span class="status-badge {% if client_account.estado %}status-active{% else %}status-inactive{% endif %}">
+          {% if client_account.estado %}
+            <i class="bi bi-check-circle me-1"></i> Activo
+          {% else %}
+            <i class="bi bi-x-circle me-1"></i> Inactivo
+          {% endif %}
+        </span>
+        
+        
+      </div>
+    </div>
+  </div>
+
+  {% if messages %}
+    <div class="mb-4 d-flex flex-column gap-2">
+      {% for message in messages %}
+        <div class="glass p-3">
+          <i class="bi bi-info-circle me-2"></i>{{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="row g-4">
+    <div class="col-12">
+
+      <div class="glass p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h5 fw-semibold m-0">
+            <i class="bi bi-robot me-1"></i> Bots asignados
+          </h2>
+          <span class="text-secondary small">{{ active_assignments|length }} activos</span>
+        </div>
+
+        <div class="d-flex flex-column gap-3">
+          {% for assignment in active_assignments %}
+            <div class="glass p-3">
+              <div class="row g-3 align-items-center">
+                <div class="col-12 col-lg-8">
+                  <div class="fw-semibold">
+                    <i class="bi bi-cpu me-1"></i> {{ assignment.bot.name }}
+                  </div>
+
+                  <div class="text-secondary small">
+                    {{ assignment.bot.description|truncatechars:120 }}
+                  </div>
+
+                  <div class="text-secondary small mt-1">
+                    <i class="bi bi-calendar-event me-1"></i>
+                    Asignado: {{ assignment.assigned_at|date:"d/m/Y H:i" }}
+                    {% if assignment.assigned_by_user %}
+                      · por {{ assignment.assigned_by_user.email }}
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                  <form method="post" class="d-grid">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="remove_bot">
+                    <input type="hidden" name="bot_id" value="{{ assignment.bot.id }}">
+                    <button type="submit" class="btn btn-red">
+                      <i class="bi bi-trash me-1"></i> Remover bot
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          {% empty %}
+            <div class="glass p-4 text-center">
+              <div class="mb-2">
+                <i class="bi bi-robot next"></i>
+              </div>
+              <div class="text-secondary">Este cliente no tiene bots asignados.</div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="glass p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h5 fw-semibold m-0">
+            <i class="bi bi-inboxes me-1"></i> Bots disponibles
+          </h2>
+          <span class="text-secondary small">{{ available_bots|length }} disponibles</span>
+        </div>
+
+        <div class="d-flex flex-column gap-3">
+          {% for bot in available_bots %}
+            <div class="glass p-3">
+              <div class="row g-3 align-items-center">
+                <div class="col-12 col-lg-8">
+                  <div class="fw-semibold">
+                    <i class="bi bi-robot me-1"></i> {{ bot.name }}
+                  </div>
+
+                  <div class="text-secondary small">
+                    {{ bot.description|truncatechars:120 }}
+                  </div>
+
+                  <div class="mt-2">
+                    <span class="status-badge {% if bot.status == 'ACTIVE' or bot.status == 'Activo' %}status-active{% else %}status-inactive{% endif %}">
+                      {{ bot.status }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                  <form method="post" class="d-grid">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="assign_bot">
+                    <input type="hidden" name="bot_id" value="{{ bot.id }}">
+                    <button type="submit" class="btn btn-glass">
+                      <i class="bi bi-plus-lg me-1"></i> Asignar bot
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          {% empty %}
+            <div class="glass p-4 text-center">
+              <div class="mb-2">
+                <i class="bi bi-inboxes next"></i>
+              </div>
+              <div class="text-secondary">No hay bots disponibles para asignar.</div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endblock %}

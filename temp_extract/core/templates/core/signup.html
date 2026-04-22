@@ -1,0 +1,257 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Crear cuenta{% endblock %}
+
+{% block content %}
+<style>
+  /* Ocultar elementos del layout base para lograr pantalla completa */
+  nav.navbar, footer, .bg-blobs { display: none !important; }
+  main.container { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+  body { background-color: #ffffff !important; margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
+  .page-wrap { min-height: unset !important; display: block; }
+  
+  /* Quitar subrayados globales si los hay */
+  a { text-decoration: none; }
+
+  /* Tipografía y estilos de inputs */
+  #auth-section {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  
+  #auth-section input[type="text"],
+  #auth-section input[type="email"],
+  #auth-section input[type="password"] {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 1px solid #FF9B71;
+      border-radius: 0.375rem;
+      outline: none;
+      transition: all 0.2s ease-in-out;
+      font-size: 0.95rem;
+      color: #333;
+      background-color: transparent;
+  }
+
+  #auth-section input:focus {
+      border-color: #FF7A55;
+      box-shadow: 0 0 0 3px rgba(255, 122, 85, 0.25);
+  }
+
+  .btn-orange {
+      background-color: #FF9B71;
+      color: white;
+      transition: all 0.3s ease;
+  }
+  .btn-orange:hover {
+      background-color: #f18c61;
+  }
+
+  /* Posicionado del ícono del ojito para la contraseña */
+  .password-wrapper {
+      position: relative;
+  }
+  .toggle-password {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #71717a;
+      transition: color 0.2s;
+  }
+  .toggle-password:hover {
+      color: #3f3f46;
+  }
+
+  /* Refinando el checkbox de Django */
+  #auth-section input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 1px;
+      accent-color: #FF9B71;
+      cursor: pointer;
+  }
+
+  /* Estilos del lado derecho (Imagen unificada) */
+  .bg-showcase {
+      background-image: url("{% static 'img/chatbot_showcase.png' %}"); 
+      background-size: cover;
+      background-position: center;
+      position: relative;
+  }
+  .bg-showcase::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0;
+      background: linear-gradient(to right, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0) 15%);
+  }
+</style>
+
+<div id="auth-section" class="flex flex-col md:flex-row min-h-screen w-full">
+  <!-- COLUMNA IZQUIERDA: Formulario -->
+  <div class="w-full md:w-1/2 lg:w-5/12 xl:w-1/3 flex flex-col justify-center px-8 md:px-12 lg:px-16 py-8 bg-white z-10 mx-auto md:mx-0 overflow-y-auto">
+    
+    <!-- Logo y subtítulo Datadicoco -->
+    <div class="mb-6 text-center md:text-left flex items-center justify-center md:justify-start gap-2 relative mt-4 md:mt-0">
+      <img src="{% static 'img/logo.png' %}" alt="Datadicoco" class="h-10 object-contain" onerror="this.src='https://cdn-icons-png.flaticon.com/512/10412/10412629.png'">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-800 leading-none tracking-tight flex items-start" style="color: #ea4335;">
+          Datadicoco
+          <span class="text-[9px] text-gray-400 font-normal ml-0.5 mt-0.5">™</span>
+        </h2>
+        <p class="text-[0.6rem] text-[#ea4335] uppercase tracking-widest mt-1 opacity-80" style="letter-spacing: 0.05em;">Google Ads & Social Media Experts</p>
+      </div>
+    </div>
+
+    <!-- Títulos Principales -->
+    <div class="mb-6 text-center md:text-left">
+      <h1 class="text-[1.7rem] md:text-[1.8rem] font-extrabold text-gray-900 mb-1 tracking-tight">Únete a CocoBot</h1>
+      <p class="text-[0.95rem] text-gray-700 font-semibold mt-1">Crea tu cuenta para empezar</p>
+    </div>
+
+    <!-- Formulario Dinámico -->
+    <form method="post" action="." class="space-y-[1.1rem]">
+      {% csrf_token %}
+      
+      <!-- Campo Nombre -->
+      <div class="space-y-1">
+        <label class="block text-[0.82rem] font-bold text-gray-800">Nombre completo</label>
+        <div>
+          {{ form.nombre }}
+        </div>
+      </div>
+
+      <!-- Campo Correo -->
+      <div class="space-y-1">
+        <label class="block text-[0.82rem] font-bold text-gray-800">Correo Electrónico</label>
+        <div>
+          {{ form.email }}
+        </div>
+      </div>
+
+      <!-- Contraseñas (Dos columnas) -->
+      <div class="flex flex-col sm:flex-row gap-4">
+          <div class="space-y-1 w-full sm:w-1/2">
+            <label class="block text-[0.82rem] font-bold text-gray-800">Contraseña</label>
+            <div class="password-wrapper">
+              {{ form.password1 }}
+              <span class="toggle-password" onclick="togglePasswordVisibility('id_password1', 'eye-icon-1')">
+                <i class="bi bi-eye-fill text-lg hover:text-gray-900" id="eye-icon-1"></i>
+              </span>
+            </div>
+          </div>
+
+          <div class="space-y-1 w-full sm:w-1/2">
+            <label class="block text-[0.82rem] font-bold text-gray-800">Confirmar</label>
+            <div class="password-wrapper">
+              {{ form.password2 }}
+              <span class="toggle-password" onclick="togglePasswordVisibility('id_password2', 'eye-icon-2')">
+                <i class="bi bi-eye-fill text-lg hover:text-gray-900" id="eye-icon-2"></i>
+              </span>
+            </div>
+          </div>
+      </div>
+
+      <!-- Aceptar Términos -->
+      <div class="flex items-start gap-2 mt-2 text-[0.82rem]">
+        <div class="pt-[1px]">
+          {{ form.accept_terms }}
+        </div>
+        <label for="{{ form.accept_terms.id_for_label }}" class="text-gray-700 font-medium leading-tight">
+          Acepto los <a href="#" class="text-orange-600 hover:text-orange-700 font-bold underline underline-offset-2">Términos del Servicio</a> y la Política de Privacidad
+        </label>
+      </div>
+
+      <!-- Errores proporcionados por Django -->
+      {% if form.errors or form.non_field_errors %}
+        <div class="bg-red-50 border-l-[3px] border-red-500 p-3 mt-3 shadow-sm rounded-r-md">
+          <p class="text-xs text-red-700 font-bold mb-1">Revisa estos campos:</p>
+          {% for field in form %}
+            {% for error in field.errors %}
+              <p class="text-[11px] text-red-600"><strong>{{ field.label }}:</strong> {{ error }}</p>
+            {% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
+            <p class="text-[11px] text-red-600">{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Botón Ingreso -->
+      <button type="submit" class="w-full btn-orange font-bold text-[0.95rem] py-[0.8rem] rounded-md shadow-sm hover:shadow-md transition duration-300 ease-in-out transform hover:-translate-y-[1px] mt-2">
+        Crear cuenta
+      </button>
+      
+      <!-- Mensaje Flash -->
+      {% if message %}
+        <p class="text-center text-[13px] font-medium text-red-500 mt-2">{{ message }}</p>
+      {% endif %}
+    </form>
+
+    <div class="text-center text-[0.85rem] text-gray-800 font-medium mt-6">
+      ¿Ya tienes cuenta? 
+      <a href="{% url 'core:login' %}" class="font-bold border-b border-orange-400 hover:text-gray-900 transition ml-1 pb-[1px] text-orange-600">Inicia sesión</a>
+    </div>
+
+    <!-- Sección de Redes Sociales -->
+    <div class="mt-6">
+      <div class="relative">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-gray-200"></div>
+        </div>
+        <div class="relative flex justify-center text-sm">
+          <span class="px-5 bg-white text-gray-700 font-bold tracking-tight text-[0.8rem]">Registrarse con</span>
+        </div>
+      </div>
+      
+      <div class="flex justify-center items-center gap-[2rem] mt-[1rem]">
+        <a href="#" class="text-[#1877F2] hover:opacity-80 transition-all transform hover:scale-110 flex items-center justify-center rounded-full hover:bg-blue-50 py-1 px-2">
+          <i class="bi bi-facebook text-[1.4rem]"></i>
+        </a>
+        <a href="#" class="text-[#E4405F] hover:opacity-80 transition-all transform hover:scale-110 flex items-center justify-center rounded-full hover:bg-pink-50 py-1 px-2">
+          <i class="bi bi-instagram text-[1.4rem]"></i>
+        </a>
+        <a href="#" class="text-[#1DA1F2] hover:opacity-80 transition-all transform hover:scale-110 flex items-center justify-center rounded-full hover:bg-blue-50 py-1 px-2">
+          <i class="bi bi-twitter text-[1.4rem]"></i>
+        </a>
+        <a href="#" class="text-[#DB4437] hover:opacity-80 transition-all transform hover:scale-110 flex items-center justify-center rounded-full hover:bg-red-50 py-1 px-2">
+          <i class="bi bi-google text-[1.4rem]"></i>
+        </a>
+      </div>
+    </div>
+    
+  </div>
+
+  <!-- COLUMNA DERECHA: Imagen Decorativa (Se oculta en celulares) -->
+  <div class="hidden md:block md:w-1/2 lg:w-7/12 xl:w-2/3 bg-showcase filter brightness-[1.02] contrast-[1.02]">
+  </div>
+</div>
+
+<script>
+  function togglePasswordVisibility(inputId, iconId) {
+    const passwordInput = document.getElementById(inputId);
+    const inputElement = passwordInput || event.currentTarget.previousElementSibling;
+    const eyeIcon = document.getElementById(iconId);
+    
+    if (inputElement && inputElement.type === 'password') {
+      inputElement.type = 'text';
+      eyeIcon.classList.remove('bi-eye-fill');
+      eyeIcon.classList.add('bi-eye-slash-fill');
+    } else if (inputElement) {
+      inputElement.type = 'password';
+      eyeIcon.classList.remove('bi-eye-slash-fill');
+      eyeIcon.classList.add('bi-eye-fill');
+    }
+  }
+
+  // Interceptar la carga e inyectar atributos si Django no los pone automáticamente
+  document.addEventListener("DOMContentLoaded", function() {
+    const pwdFields = document.querySelectorAll('.password-wrapper input');
+    if(pwdFields.length >= 2) {
+      pwdFields[0].id = 'id_password1';
+      pwdFields[1].id = 'id_password2';
+    }
+  });
+</script>
+{% endblock %}

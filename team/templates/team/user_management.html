@@ -1,0 +1,125 @@
+{% extends "core/base.html" %}
+
+{% block title %}Gestión de usuarios{% endblock %}
+
+{% block content %}
+<section class="container py-4 py-lg-5">
+
+  <div class="glass p-4 p-lg-5 mb-4">
+    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+      <div>
+        <a href="{% url 'bots:dashboard' %}" class="text-decoration-none small">
+          <i class="bi bi-arrow-left"> </i> Volver al dashboard
+        </a>
+        <h1 class="h3 fw-semibold mt-2 mb-2">
+          <i class="bi bi-people"> </i> Gestión de usuarios
+        </h1>
+        <p class="text-secondary mb-0">
+          Crea usuarios nuevos y ajusta rol o estado desde una sola vista.
+        </p>
+        <div class="mt-3 d-flex flex-wrap gap-2">
+          <a class="btn btn-glass btn-sm" href="{% url 'team:client_list' %}">Gestionar clientes
+          </a>
+          <a class="btn btn-glass btn-sm" href="{% url 'team:bot_list' %}">Gestionar bots
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if messages %}
+    <div class="mb-4 d-flex flex-column gap-2">
+      {% for message in messages %}
+        <div class="glass p-3 {% if message.tags == 'error' %}text-danger{% endif %}">
+          {% if message.tags == 'error' %}
+            <i class="bi bi-exclamation-triangle me-2"></i>
+          {% else %}
+            <i class="bi bi-info-circle me-2"></i>
+          {% endif %}
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="row">
+    <div class="col-12">
+      <div class="glass p-4 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h5 fw-semibold m-0">
+            <i class="bi bi-people"></i> Usuarios
+          </h2>
+          <span class="text-secondary small">{{ user_rows|length }} registrados</span>
+        </div>
+
+        <div class="d-flex flex-column gap-3">
+          {% for row in user_rows %}
+            {% with managed_user=row.user %}
+            <form method="post" class="glass p-3">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="update_user">
+              <input type="hidden" name="user_id" value="{{ managed_user.id }}">
+
+              <div class="row g-3 align-items-end">
+                <div class="col-12 col-md-4">
+                  <div class="fw-semibold">
+                    <i class="bi bi-person"></i>
+                    {{ managed_user.first_name|default:"Sin nombre" }}
+                  </div>
+                  <div class="text-secondary small">
+                    <i class="bi bi-envelope"></i>
+                    {{ managed_user.email }}
+                  </div>
+                </div>
+
+                <div class="col-6 col-md-3">
+                  <select name="role" class="form-select">
+                    {% for value, label in role_choices %}
+                      <option value="{{ value }}" {% if managed_user.role == value %}selected{% endif %}>
+                        {{ label }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="col-6 col-md-2">
+                  <div class="form-check mt-4">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      name="is_active"
+                      id="active-{{ managed_user.id }}"
+                      {% if managed_user.is_active %}checked{% endif %}
+                    >
+                    <label class="form-check-label" for="active-{{ managed_user.id }}">
+                      Activo
+                    </label>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-3 d-flex gap-2">
+                  {% if managed_user.role == "CLIENT" and row.client_account_id %}
+                    <a class="btn btn-red btn-sm flex-fill" href="{% url 'team:client_detail' row.client_account_id %}">
+                      <i class="bi bi-robot me-1"></i>Asignar
+                    </a>
+                  {% endif %}
+
+                  <button type="submit" class="btn btn-glass flex-fill">
+                    <i class="bi bi-floppy me-1"></i>Guardar
+                  </button>
+                </div>
+              </div>
+            </form>
+            {% endwith %}
+          {% empty %}
+            <div class="glass p-4 text-center">
+              <div class="h5 fw-semibold mb-2">No hay usuarios</div>
+              <div class="text-secondary">Crea el primero desde el formulario lateral.</div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

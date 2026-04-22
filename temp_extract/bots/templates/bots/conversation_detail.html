@@ -1,0 +1,145 @@
+{% extends "core/base.html" %}
+
+{% block title %}Conversación{% endblock %}
+
+{% block content %}
+<section class="container py-4 py-lg-5">
+
+  <div class="glass p-4 p-lg-5 mb-4">
+    <div class="d-flex flex-column flex-lg-row justify-content-between gap-4">
+
+      <div>
+        <a href="{% url 'bots:detail' bot.id %}" class="text-decoration-none small">
+          <i class="bi bi-arrow-left me-1"></i> Volver al bot
+        </a>
+
+        <h1 class="h3 fw-semibold mt-2">
+          <i class="bi bi-person"></i>
+          {{ conversation.end_user.display_name|default:"Usuario final" }}
+        </h1>
+
+        <p class="text-secondary">
+          <i class="bi bi-robot"></i> {{ bot.name }}
+          |
+          {{ conversation.channel_type|default:conversation.end_user.channel_type|default:"Canal sin definir" }}
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+
+  <div class="row g-4">
+
+    <div class="col-12 col-xl-8">
+
+      <div class="glass p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h5 fw-semibold">Conversación
+          </h2>
+          <span class="text-secondary small">
+            {{ messages|length }} mensajes
+          </span>
+        </div>
+
+        {% if messages %}
+
+          <div class="d-flex flex-column gap-3">
+
+            {% for message in messages %}
+
+              <div class="msg {% if message.direction == 'outbound' %}user{% endif %}">
+
+                <div class="d-flex justify-content-between gap-3 mb-2">
+
+                  <div class="fw-semibold">
+                    <i class="bi bi-person me-1"></i>
+                    {% if message.sent_by_type == "end_user" %}
+                      {{ conversation.end_user.display_name|default:"Usuario final" }}
+                    {% else %}
+                      {{ message.sent_by_type|default:"sistema"|upper }}
+                    {% endif %}
+
+                    {% if message.sent_by_user %}
+                      <span class="text-secondary small">
+                      {{ message.sent_by_user.email }}
+                      </span>
+                    {% endif %}
+                  </div>
+
+                  <div class="text-secondary small">
+                    <i class="bi bi-clock me-1"></i>
+                    {{ message.created_at|date:"D/M/A | H:i" }}
+                  </div>
+
+                </div>
+
+                <div>
+                  {{ message.content }}
+                </div>
+
+                <div class="text-secondary small">
+                  Estado: {{ message.delivery_status|default:"Sin estado" }}
+                </div>
+
+              </div>
+
+            {% endfor %}
+
+          </div>
+
+        {% else %}
+
+          <div class="glass p-4 text-center">
+            <div class="mb-2">
+              <i class="bi bi-chat-square-text next"></i>
+            </div>
+            <div class="h5 fw-semibold mb-2">No hay mensajes registrados</div>
+            <div class="text-secondary">
+              Esta conversación no tiene historial.
+            </div>
+          </div>
+
+        {% endif %}
+
+      </div>
+
+    </div>
+
+
+    <div class="col-12 col-xl-4">
+
+      <div class="glass p-4">
+
+        <h2 class="h5 fw-semibold mb-3">Vista del dashboard
+        </h2>
+
+        <div class="glass p-4">
+
+          <div class="fw-semibold mb-2">
+            <i class="bi bi-eye me-1"></i> Solo lectura
+          </div>
+
+          <div class="text-secondary small mb-3">
+            Las respuestas a usuarios se envían desde WhatsApp a través del workflow de n8n.
+            Esta vista solo muestra historial, estado y actividad.
+          </div>
+
+          <div class="text-secondary small">
+
+            {% if conversation_is_open %}
+              <i class="bi bi-unlock me-1"></i>
+              La conversación está abierta en el canal externo.
+            {% else %}
+              <i class="bi bi-lock me-1"></i>
+              La conversación está cerrada en el canal externo.
+            {% endif %}
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

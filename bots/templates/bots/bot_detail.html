@@ -1,0 +1,111 @@
+{% extends "core/base.html" %}
+
+{% block title %}Detalle del bot{% endblock %}
+
+{% block content %}
+<section class="container py-4 py-lg-5">
+
+  <div class="glass p-4 p-lg-5 mb-4">
+    <div class="d-flex flex-column flex-lg-row justify-content-between gap-4 align-items-lg-center">
+
+      <div>
+        <a href="{% url 'bots:dashboard' %}" class="text-decoration-none small">
+          <i class="bi bi-arrow-left me-1"></i> Volver al dashboard
+        </a>
+
+        <h1 class="h3 fw-semibold mt-2 mb-2">
+          <i class="bi bi-robot me-1"></i> {{ bot.name }}
+        </h1>
+
+        <p class="text-secondary mb-0">
+          {{ bot.description|default:"Sin descripción disponible." }}
+        </p>
+      </div>
+
+      <div class="d-flex flex-column align-items-lg-end gap-2">
+        <span class="status-badge {% if bot.status == 'ACTIVE' or bot.status == 'Activo' %}status-active{% else %}status-inactive{% endif %}">
+          {{ bot.status }}
+        </span>
+
+      </div>
+
+    </div>
+  </div>
+
+  <div class="glass p-4 p-lg-5">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-1">
+      <h2 class="h5 fw-semibold">
+        <i class="bi bi-chat-dots"></i> Conversaciones
+      </h2>
+
+      <span class="text-secondary small">
+        Conversaciones {{ conversations|length }}
+      </span>
+    </div>
+
+    {% if conversations %}
+      <div class="d-flex flex-column gap-3">
+
+        {% for conversation in conversations %}
+          <a
+            class="glass p-3 p-lg-4 text-decoration-none text-dark"
+            href="{% url 'bots:conversation_detail' conversation.id %}"
+          >
+            <div class="d-flex justify-content-between align-items-start gap-3">
+
+              <div class="flex-grow-1">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <div class="fw-semibold">
+                    <i class="bi bi-person"></i>
+                    {{ conversation.end_user.display_name|default:"Usuario final" }}
+                  </div>
+                </div>
+
+                <div class="text-secondary small">
+                  <i class="bi bi-chat-left-dots"></i>
+                  {{ conversation.end_user.channel_type|default:"Canal no definido" }}
+                </div>
+
+                <div class="text-secondary small">
+                  <i class="bi bi-clock"></i>
+                  Iniciada: {{ conversation.started_at|date:"d/m/Y | H:i" }}
+                </div>
+
+                <div class="text-secondary small">
+                  <i class="bi bi-activity"></i>
+                  Última actividad: {{ conversation.last_activity_at|date:"d/m/Y | H:i" }}
+                </div>
+              </div>
+
+              <div class="d-flex flex-column align-items-end mt-3">
+                <span class="open-indicator">
+                  <i class="bi bi-arrow-right"></i>
+                </span>
+              </div>
+
+            </div>
+          </a>
+        {% endfor %}
+
+      </div>
+    {% else %}
+      <div class="glass p-4 p-lg-5 text-center">
+        <div class="mb-2">
+          <i class="bi bi-chat-square-text next"></i>
+        </div>
+
+        <div class="h5 fw-semibold mb-2">
+          No hay conversaciones para este bot
+        </div>
+
+        <div class="text-secondary">
+          Las conversaciones aparecerán listadas aquí.
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+
+</section>
+{% endblock %}

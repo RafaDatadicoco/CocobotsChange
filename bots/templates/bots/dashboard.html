@@ -3,209 +3,10 @@
 
 {% block title %}Dashboard{% endblock %}
 
+{% block body_class %}page-dashboard{% endblock %}
+
 {% block content %}
-<style>
-  nav.navbar,
-  footer,
-  .bg-blobs {
-    display: none !important;
-  }
 
-  main.container {
-    max-width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-
-  body {
-    background-color: #f8fafc !important;
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    font-family: 'Inter', system-ui, sans-serif;
-    overflow: hidden;
-  }
-
-  .page-wrap {
-    min-height: unset !important;
-    display: block;
-  }
-
-  a {
-    text-decoration: none;
-  }
-
-
-  .dashboard-layout {
-    display: flex;
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden;
-  }
-
-  .sidebar {
-    width: 260px;
-    background-color: #ffffff;
-    border-right: 1px solid #edf2f7;
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-    z-index: 50;
-    transition: transform 0.3s ease-in-out;
-  }
-
-  .main-wrapper {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    background-color: #f9fafb;
-    width: calc(100% - 260px);
-  }
-
-  .dash-header {
-    height: 76px;
-    background-color: #ffffff;
-    border-bottom: 1px solid #edf2f7;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 2rem;
-    flex-shrink: 0;
-    z-index: 5;
-  }
-
-  .main-content {
-    flex-grow: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 2rem;
-  }
-
-
-  .nav-item {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem 1.25rem;
-    color: #64748b;
-    font-size: 0.9rem;
-    font-weight: 600;
-    margin: 0.2rem 1rem;
-    border-radius: 0.5rem;
-    transition: all 0.2s ease;
-  }
-
-  .nav-item i {
-    font-size: 1.1rem;
-  }
-
-  .nav-item:hover {
-    background-color: #fff4ed;
-    color: #FF9B71;
-  }
-
-  .nav-item.active {
-    background-color: #FF9B71;
-    color: white;
-    box-shadow: 0 4px 10px -2px rgba(255, 155, 113, 0.4);
-  }
-
-
-  .welcome-banner {
-    background: linear-gradient(135deg, #fb923c 0%, #ff7a55 100%);
-    border-radius: 1rem;
-    padding: 2rem 2.5rem;
-    color: white;
-    box-shadow: 0 10px 25px -5px rgba(255, 122, 85, 0.3);
-  }
-
-  .stat-card {
-    background: white;
-    border-radius: 1rem;
-    padding: 1.2rem;
-    border: 1px solid #f1f5f9;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-
-  .icon-circle {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    flex-shrink: 0;
-  }
-
-
-  .sidebar-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.4);
-    z-index: 40;
-    transition: opacity 0.3s;
-  }
-
-
-  @media (max-width: 768px) {
-    .dashboard-layout {
-      flex-direction: column;
-    }
-
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 100%;
-      transform: translateX(-100%);
-    }
-
-    .sidebar.open {
-      transform: translateX(0);
-    }
-
-    .sidebar-overlay.open {
-      display: block;
-    }
-
-    .main-wrapper {
-      width: 100%;
-    }
-
-    .dash-header {
-      padding: 0 1rem;
-      height: 65px;
-    }
-
-    .main-content {
-      padding: 1rem;
-    }
-
-    .welcome-banner {
-      padding: 1.5rem 1.2rem;
-      align-items: flex-start;
-    }
-
-
-    .panel-container {
-      height: 400px;
-    }
-  }
-
-
-  ::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background-color: #cbd5e1;
-    border-radius: 10px;
-  }
-</style>
 
 <div class="dashboard-layout relative">
 
@@ -235,8 +36,7 @@
       {% endif %}
       <a href="#" class="nav-item flex justify-between">
         <div class="flex"><i class="bi bi-chat-text me-3"></i> Conversaciones</div>
-        <span class="bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full text-[0.65rem] font-bold ml-2">{{
-          stats.conversations|default:'0' }}</span>
+        <span class="bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full text-[0.65rem] font-bold ml-2">{{ stats.conversations|default:'0' }}</span>
       </a>
       <a href="#" class="nav-item">
         <i class="bi bi-bar-chart me-3"></i> Estadísticas
@@ -510,9 +310,7 @@
 
                       <div
                         class="text-[0.65rem] sm:text-[0.7rem] text-gray-500 my-1 truncate bg-gray-50 max-w-max px-2 py-[3px] rounded border border-gray-100 flex items-center">
-                        <i class="bi bi-robot mr-1 opacity-50"></i> <span
-                          class="font-bold text-gray-600 truncate max-w-[120px] sm:max-w-[180px]">{{
-                          conversation.bot.name }}</span>
+                        <i class="bi bi-robot mr-1 opacity-50"></i> <span class="font-bold text-gray-600 truncate max-w-[120px] sm:max-w-[180px]">{{ conversation.bot.name }}</span>
                       </div>
 
                       <div class="mt-2 sm:mt-3 mb-1 text-right sm:text-left">
@@ -549,6 +347,10 @@
 </div>
 
 <script>
+  /* 
+   * [Script Autorizado - UI]
+   * Controla la apertura y cierre del menú lateral en dispositivos móviles.
+   */
   function toggleMobileMenu() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');

@@ -1,111 +1,194 @@
 {% extends "core/base.html" %}
+{% load static %}
 
 {% block title %}Detalle del bot{% endblock %}
 
+{% block body_class %}page-dashboard{% endblock %}
+
 {% block content %}
-<section class="container py-4 py-lg-5">
+<div class="dashboard-layout relative">
 
-  <div class="glass p-4 p-lg-5 mb-4">
-    <div class="d-flex flex-column flex-lg-row justify-content-between gap-4 align-items-lg-center">
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileMenu()"></div>
 
-      <div>
-        <a href="{% url 'bots:dashboard' %}" class="text-decoration-none small">
-          <i class="bi bi-arrow-left me-1"></i> Volver al dashboard
+  <aside class="sidebar" id="sidebar">
+    <div class="h-[76px] flex items-center justify-between px-6 border-b border-gray-100">
+      <div class="flex items-center">
+        <a href="{% url 'core:index' %}" class="flex items-center text-decoration-none">
+          <img src="{% static 'img/logo.png' %}" alt="Datadicoco" class="h-8 object-contain" onerror="this.src='https://cdn-icons-png.flaticon.com/512/10412/10412629.png'">
+          <h2 class="text-xl font-bold text-gray-800 ml-2 pt-1" style="color: #ea4335;">Datadicoco</h2>
         </a>
+      </div>
+      <button class="md:hidden text-gray-400 hover:text-red-500" onclick="toggleMobileMenu()">
+        <i class="bi bi-x-lg text-xl"></i>
+      </button>
+    </div>
 
-        <h1 class="h3 fw-semibold mt-2 mb-2">
-          <i class="bi bi-robot me-1"></i> {{ bot.name }}
+    <div class="flex-grow py-6 overflow-y-auto">
+      <div class="px-7 mb-2 text-[0.65rem] font-bold text-gray-400 uppercase tracking-widest bg-white">Principal</div>
+      <a href="{% url 'bots:dashboard' %}" class="nav-item">
+        <i class="bi bi-house-door me-3"></i> Inicio
+      </a>
+      {% if can_manage_clients or request.user.is_authenticated %}
+      <a href="#" class="nav-item active">
+        <i class="bi bi-robot me-3"></i> Mis Chatbots
+      </a>
+      {% endif %}
+      <a href="#" class="nav-item flex justify-between">
+        <div class="flex"><i class="bi bi-chat-text me-3"></i> Conversaciones</div>
+      </a>
+      <a href="#" class="nav-item">
+        <i class="bi bi-bar-chart me-3"></i> Estadísticas
+      </a>
+    </div>
+  </aside>
+
+  <div class="main-wrapper">
+
+    <header class="dash-header">
+      <div class="flex items-center gap-3 md:gap-4 w-full md:w-auto">
+        <button class="md:hidden text-gray-500 hover:text-orange-500 transition focus:outline-none p-1"
+          onclick="toggleMobileMenu()">
+          <i class="bi bi-list text-[1.6rem]"></i>
+        </button>
+        <h1 class="text-[1.2rem] md:text-[1.35rem] font-extrabold text-gray-800 tracking-tight flex-shrink-0">
+          Detalles de Bot
         </h1>
-
-        <p class="text-secondary mb-0">
-          {{ bot.description|default:"Sin descripción disponible." }}
-        </p>
       </div>
 
-      <div class="d-flex flex-column align-items-lg-end gap-2">
-        <span class="status-badge {% if bot.status == 'ACTIVE' or bot.status == 'Activo' %}status-active{% else %}status-inactive{% endif %}">
-          {{ bot.status }}
-        </span>
-
+      <div class="hidden md:flex flex-grow max-w-xl mx-4">
       </div>
 
-    </div>
-  </div>
+      <div class="flex items-center gap-2 md:gap-3 flex-shrink-0 ml-auto md:ml-0">
+        <button class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center hover:bg-orange-200 transition">
+          <i class="bi bi-sun-fill text-sm md:text-base"></i>
+        </button>
+        <div class="hidden md:block w-px h-6 bg-gray-200 mx-1"></div>
+        <div class="flex items-center gap-2 md:gap-3 cursor-pointer group">
+          <div class="bg-gray-200 w-[32px] h-[32px] md:w-[38px] md:h-[38px] rounded-full flex items-center justify-center text-gray-600 font-bold overflow-hidden shadow-sm flex-shrink-0">
+            {% if request.user.first_name %}
+            {{ request.user.first_name|first|upper }}
+            {% else %}
+            <i class="bi bi-person-fill text-lg mt-1"></i>
+            {% endif %}
+          </div>
+          <div class="hidden lg:block text-[0.85rem] leading-tight mr-1">
+            <div class="font-bold text-gray-800">{{ request.user.first_name|default:'Usuario' }}</div>
+            <div class="text-[0.65rem] text-gray-400 truncate max-w-[120px]">{{ request.user.email }}</div>
+          </div>
 
-  <div class="glass p-4 p-lg-5">
+          <form method="post" action="{% url 'core:logout' %}" style="display: inline-block;">
+            {% csrf_token %}
+            <button type="submit" class="text-gray-400 hover:text-red-500 transition py-1 md:px-1"
+              title="Cerrar sesión">
+              <i class="bi bi-box-arrow-right text-[1.1rem]"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    </header>
 
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-1">
-      <h2 class="h5 fw-semibold">
-        <i class="bi bi-chat-dots"></i> Conversaciones
-      </h2>
-
-      <span class="text-secondary small">
-        Conversaciones {{ conversations|length }}
-      </span>
-    </div>
-
-    {% if conversations %}
-      <div class="d-flex flex-column gap-3">
-
-        {% for conversation in conversations %}
-          <a
-            class="glass p-3 p-lg-4 text-decoration-none text-dark"
-            href="{% url 'bots:conversation_detail' conversation.id %}"
-          >
-            <div class="d-flex justify-content-between align-items-start gap-3">
-
-              <div class="flex-grow-1">
-                <div class="d-flex align-items-center gap-2 mb-1">
-                  <div class="fw-semibold">
-                    <i class="bi bi-person"></i>
-                    {{ conversation.end_user.display_name|default:"Usuario final" }}
-                  </div>
-                </div>
-
-                <div class="text-secondary small">
-                  <i class="bi bi-chat-left-dots"></i>
-                  {{ conversation.end_user.channel_type|default:"Canal no definido" }}
-                </div>
-
-                <div class="text-secondary small">
-                  <i class="bi bi-clock"></i>
-                  Iniciada: {{ conversation.started_at|date:"d/m/Y | H:i" }}
-                </div>
-
-                <div class="text-secondary small">
-                  <i class="bi bi-activity"></i>
-                  Última actividad: {{ conversation.last_activity_at|date:"d/m/Y | H:i" }}
-                </div>
-              </div>
-
-              <div class="d-flex flex-column align-items-end mt-3">
-                <span class="open-indicator">
-                  <i class="bi bi-arrow-right"></i>
-                </span>
-              </div>
-
+    <main class="main-content">
+      <div class="max-w-7xl mx-auto pb-8">
+        
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8 mb-6">
+          <div class="flex flex-col lg:flex-row justify-between gap-6 lg:items-center">
+            <div>
+              <a href="{% url 'bots:dashboard' %}" class="text-orange-500 hover:text-orange-600 text-sm font-bold flex items-center mb-3 transition">
+                <i class="bi bi-arrow-left me-1"></i> Volver al dashboard
+              </a>
+              <h1 class="text-2xl lg:text-3xl font-extrabold text-gray-800 tracking-tight mb-2 flex items-center">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-orange-400 to-orange-300 text-white flex items-center justify-center text-lg mr-3 shadow-md">{{ bot.name|first|upper }}</div>
+                {{ bot.name }}
+              </h1>
+              <p class="text-gray-500 font-medium max-w-2xl text-sm">
+                {{ bot.description|default:"Sin descripción disponible." }}
+              </p>
             </div>
-          </a>
-        {% endfor %}
+            
+            <div class="flex flex-col items-start lg:items-end gap-2">
+              <span class="px-4 py-1.5 rounded-full text-[0.8rem] font-bold border {% if bot.status == 'ACTIVE' or bot.status == 'Activo' %}bg-green-50 text-green-600 border-green-200 shadow-[0_2px_10px_rgba(34,197,94,0.15)]{% else %}bg-gray-50 text-gray-500 border-gray-200{% endif %}">
+                <i class="bi {% if bot.status == 'ACTIVE' or bot.status == 'Activo' %}bi-check-circle-fill{% else %}bi-dash-circle-fill{% endif %} mr-1"></i> {{ bot.status }}
+              </span>
+            </div>
+          </div>
+        </div>
 
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 panel-container flex flex-col h-[600px]">
+          <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 rounded-t-xl shrink-0">
+            <h2 class="h5 font-extrabold text-gray-800 text-[1.05rem] flex items-center">
+              <i class="bi bi-chat-dots text-orange-500 mr-2 text-lg"></i> Conversaciones
+            </h2>
+            <span class="bg-gray-100 text-gray-600 text-[0.7rem] px-3 py-1 rounded-full font-bold shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
+              Total: {{ conversations|length }}
+            </span>
+          </div>
+
+          <div class="p-3 overflow-y-auto flex-grow h-full bg-[#fdfdfd]">
+          {% if conversations %}
+            <div class="flex flex-col gap-2 p-1">
+              {% for conversation in conversations %}
+                <a class="bg-white p-4 rounded-xl border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.08)] hover:bg-orange-50/20 hover:border-orange-100 transition-all flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 group"
+                  href="{% url 'bots:conversation_detail' conversation.id %}">
+                  
+                  <div class="flex flex-col">
+                    <div class="flex items-center gap-2 mb-1.5">
+                      <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center font-bold text-xs border border-blue-100/50">
+                        {{ conversation.end_user.display_name|first|upper|default:"U" }}
+                      </div>
+                      <div class="font-extrabold text-[0.95rem] text-gray-800 group-hover:text-orange-600 transition">
+                        {{ conversation.end_user.display_name|default:"Usuario final" }}
+                      </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3 mt-1 ml-10">
+                      <div class="text-[0.7rem] font-bold text-gray-500 bg-gray-50 px-2 py-0.5 rounded border border-gray-100 flex items-center">
+                        <i class="bi bi-chat-left-dots mr-1.5 opacity-60"></i>
+                        {{ conversation.end_user.channel_type|default:"Canal" }}
+                      </div>
+                      <div class="text-[0.65rem] font-medium text-gray-400 flex items-center">
+                        <i class="bi bi-clock mr-1"></i> Iniciada: {{ conversation.started_at|date:"d/m/y H:i" }}
+                      </div>
+                      <div class="text-[0.65rem] font-medium text-gray-400 flex items-center">
+                        <i class="bi bi-activity mr-1"></i> Última: {{ conversation.last_activity_at|date:"d/m/y H:i" }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="hidden sm:flex shrink-0">
+                    <div class="w-10 h-10 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 shadow-sm">
+                      <i class="bi bi-arrow-right text-lg"></i>
+                    </div>
+                  </div>
+                </a>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="flex flex-col items-center justify-center h-full text-center p-8 text-gray-400 opacity-80">
+              <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-[0_4px_15px_rgba(0,0,0,0.03)] border border-gray-100">
+                <i class="bi bi-chat-square-text text-3xl text-orange-200"></i>
+              </div>
+              <div class="text-[1.1rem] font-extrabold text-gray-600 mb-2">No hay conversaciones</div>
+              <div class="text-[0.85rem] font-medium max-w-sm mx-auto p-0">Las conversaciones procesadas por este chatbot aparecerán listadas aquí una vez recibidas.</div>
+            </div>
+          {% endif %}
+          </div>
+        </div>
+        
       </div>
-    {% else %}
-      <div class="glass p-4 p-lg-5 text-center">
-        <div class="mb-2">
-          <i class="bi bi-chat-square-text next"></i>
-        </div>
-
-        <div class="h5 fw-semibold mb-2">
-          No hay conversaciones para este bot
-        </div>
-
-        <div class="text-secondary">
-          Las conversaciones aparecerán listadas aquí.
-        </div>
-      </div>
-    {% endif %}
-
+    </main>
   </div>
+</div>
 
-</section>
+<script>
+  /* 
+   * [Script Autorizado - UI]
+   * Controla la apertura y cierre del menú lateral principal en vista móvil para el dashboard.
+   */
+  function toggleMobileMenu() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+  }
+</script>
 {% endblock %}

@@ -1,145 +1,241 @@
 {% extends "core/base.html" %}
+{% load static %}
 
 {% block title %}Conversación{% endblock %}
 
+{% block body_class %}page-dashboard{% endblock %}
+
 {% block content %}
-<section class="container py-4 py-lg-5">
+<div class="dashboard-layout relative">
 
-  <div class="glass p-4 p-lg-5 mb-4">
-    <div class="d-flex flex-column flex-lg-row justify-content-between gap-4">
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileMenu()"></div>
 
-      <div>
-        <a href="{% url 'bots:detail' bot.id %}" class="text-decoration-none small">
-          <i class="bi bi-arrow-left me-1"></i> Volver al bot
+  <aside class="sidebar" id="sidebar">
+    <div class="h-[76px] flex items-center justify-between px-6 border-b border-gray-100">
+      <div class="flex items-center">
+        <a href="{% url 'core:index' %}" class="flex items-center text-decoration-none">
+          <img src="{% static 'img/logo.png' %}" alt="Datadicoco" class="h-8 object-contain" onerror="this.src='https://cdn-icons-png.flaticon.com/512/10412/10412629.png'">
+          <h2 class="text-xl font-bold text-gray-800 ml-2 pt-1" style="color: #ea4335;">Datadicoco</h2>
         </a>
+      </div>
+      <button class="md:hidden text-gray-400 hover:text-red-500" onclick="toggleMobileMenu()">
+        <i class="bi bi-x-lg text-xl"></i>
+      </button>
+    </div>
 
-        <h1 class="h3 fw-semibold mt-2">
-          <i class="bi bi-person"></i>
-          {{ conversation.end_user.display_name|default:"Usuario final" }}
+    <div class="flex-grow py-6 overflow-y-auto">
+      <div class="px-7 mb-2 text-[0.65rem] font-bold text-gray-400 uppercase tracking-widest bg-white">Principal</div>
+      <a href="{% url 'bots:dashboard' %}" class="nav-item">
+        <i class="bi bi-house-door me-3"></i> Inicio
+      </a>
+      {% if can_manage_clients or request.user.is_authenticated %}
+      <a href="#" class="nav-item">
+        <i class="bi bi-robot me-3"></i> Mis Chatbots
+      </a>
+      {% endif %}
+      <a href="#" class="nav-item active flex justify-between">
+        <div class="flex"><i class="bi bi-chat-text me-3"></i> Conversaciones</div>
+      </a>
+      <a href="#" class="nav-item">
+        <i class="bi bi-bar-chart me-3"></i> Estadísticas
+      </a>
+    </div>
+  </aside>
+
+  <div class="main-wrapper">
+
+    <header class="dash-header">
+      <div class="flex items-center gap-3 md:gap-4 w-full md:w-auto">
+        <button class="md:hidden text-gray-500 hover:text-orange-500 transition focus:outline-none p-1"
+          onclick="toggleMobileMenu()">
+          <i class="bi bi-list text-[1.6rem]"></i>
+        </button>
+        <h1 class="text-[1.2rem] md:text-[1.35rem] font-extrabold text-gray-800 tracking-tight flex-shrink-0">
+          Transcipción de Chat
         </h1>
-
-        <p class="text-secondary">
-          <i class="bi bi-robot"></i> {{ bot.name }}
-          |
-          {{ conversation.channel_type|default:conversation.end_user.channel_type|default:"Canal sin definir" }}
-        </p>
       </div>
 
-    </div>
-  </div>
+      <div class="hidden md:flex flex-grow max-w-xl mx-4">
+      </div>
 
+      <div class="flex items-center gap-2 md:gap-3 flex-shrink-0 ml-auto md:ml-0">
+        <button class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center hover:bg-orange-200 transition">
+          <i class="bi bi-sun-fill text-sm md:text-base"></i>
+        </button>
+        <div class="hidden md:block w-px h-6 bg-gray-200 mx-1"></div>
+        <div class="flex items-center gap-2 md:gap-3 cursor-pointer group">
+          <div class="bg-gray-200 w-[32px] h-[32px] md:w-[38px] md:h-[38px] rounded-full flex items-center justify-center text-gray-600 font-bold overflow-hidden shadow-sm flex-shrink-0">
+            {% if request.user.first_name %}
+            {{ request.user.first_name|first|upper }}
+            {% else %}
+            <i class="bi bi-person-fill text-lg mt-1"></i>
+            {% endif %}
+          </div>
+          <div class="hidden lg:block text-[0.85rem] leading-tight mr-1">
+            <div class="font-bold text-gray-800">{{ request.user.first_name|default:'Usuario' }}</div>
+            <div class="text-[0.65rem] text-gray-400 truncate max-w-[120px]">{{ request.user.email }}</div>
+          </div>
 
-  <div class="row g-4">
+          <form method="post" action="{% url 'core:logout' %}" style="display: inline-block;">
+            {% csrf_token %}
+            <button type="submit" class="text-gray-400 hover:text-red-500 transition py-1 md:px-1"
+              title="Cerrar sesión">
+              <i class="bi bi-box-arrow-right text-[1.1rem]"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    </header>
 
-    <div class="col-12 col-xl-8">
+    <main class="main-content">
+      <div class="max-w-7xl mx-auto pb-8">
 
-      <div class="glass p-4">
-
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h2 class="h5 fw-semibold">Conversación
-          </h2>
-          <span class="text-secondary small">
-            {{ messages|length }} mensajes
-          </span>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8 mb-6">
+          <div class="flex flex-col lg:flex-row justify-between gap-6">
+            <div>
+              <a href="{% url 'bots:detail' bot.id %}" class="text-orange-500 hover:text-orange-600 text-sm font-bold flex items-center mb-3 transition">
+                <i class="bi bi-arrow-left me-1"></i> Volver al bot
+              </a>
+              <h1 class="text-2xl lg:text-3xl font-extrabold text-gray-800 tracking-tight mb-2 flex items-center">
+                <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 border border-blue-100/50 flex items-center justify-center text-lg mr-3 shadow-md">
+                  {{ conversation.end_user.display_name|first|upper|default:"U" }}
+                </div>
+                {{ conversation.end_user.display_name|default:"Usuario final" }}
+              </h1>
+              <div class="text-gray-500 font-medium text-sm flex items-center gap-2">
+                <span class="bg-gray-100 px-2 py-0.5 rounded border border-gray-200">
+                  <i class="bi bi-robot mr-1"></i> {{ bot.name }}
+                </span>
+                <span class="text-gray-300">|</span>
+                <span class="bg-gray-50 px-2 py-0.5 rounded border border-gray-100 flex items-center">
+                  <i class="bi bi-chat-left-dots mr-1.5 opacity-60"></i>
+                  {{ conversation.channel_type|default:conversation.end_user.channel_type|default:"Canal sin definir" }}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {% if messages %}
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-          <div class="d-flex flex-column gap-3">
+          <div class="lg:col-span-8 bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col h-[500px] lg:h-[600px] panel-container">
+            <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 rounded-t-xl shrink-0">
+              <h2 class="font-extrabold text-gray-800 text-[1.05rem] flex items-center">
+                <i class="bi bi-chat-text text-orange-500 mr-2 text-lg"></i> Conversación
+              </h2>
+              <span class="bg-gray-100 text-gray-600 text-[0.7rem] px-3 py-1 rounded-full font-bold shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
+                {{ messages|length }} mensajes
+              </span>
+            </div>
 
-            {% for message in messages %}
+            <div class="p-4 overflow-y-auto flex-grow h-full bg-[#fdfdfd] flex flex-col gap-4">
+              {% if messages %}
+                {% for message in messages %}
+                  <div class="msg flex flex-col max-w-[85%] {% if message.direction == 'outbound' %}ml-auto{% endif %}">
+                    
+                    <div class="flex items-center gap-2 mb-1 px-1 {% if message.direction == 'outbound' %}justify-end{% endif %}">
+                      <div class="font-bold text-[0.75rem] text-gray-700">
+                        {% if message.direction == 'outbound' %}
+                          {% if message.sent_by_type == "end_user" %}
+                            {{ conversation.end_user.display_name|default:"Usuario final" }}
+                          {% else %}
+                            {{ message.sent_by_type|default:"sistema"|upper }}
+                          {% endif %}
+                        {% else %}
+                          {{ conversation.end_user.display_name|default:"Usuario final" }}
+                        {% endif %}
+                      </div>
+                      <span class="text-gray-400 text-[0.65rem] font-medium"><i class="bi bi-clock mr-0.5"></i> {{ message.created_at|date:"d/m/A H:i" }}</span>
+                    </div>
 
-              <div class="msg {% if message.direction == 'outbound' %}user{% endif %}">
+                    <div class="rounded-2xl p-3 shadow-sm border {% if message.direction == 'outbound' %}bg-orange-50/50 border-orange-100/50 rounded-tr-sm text-gray-800{% else %}bg-white border-gray-100 rounded-tl-sm text-gray-700{% endif %}">
+                      <div class="text-[0.9rem] break-words">
+                        {{ message.content }}
+                      </div>
+                    </div>
 
-                <div class="d-flex justify-content-between gap-3 mb-2">
-
-                  <div class="fw-semibold">
-                    <i class="bi bi-person me-1"></i>
-                    {% if message.sent_by_type == "end_user" %}
-                      {{ conversation.end_user.display_name|default:"Usuario final" }}
-                    {% else %}
-                      {{ message.sent_by_type|default:"sistema"|upper }}
+                    {% if message.direction == 'outbound' %}
+                      <div class="text-[0.6rem] text-gray-400 text-right mt-1 font-medium px-1">
+                        {{ message.delivery_status|default:"Entregado" }} {% if message.delivery_status == 'read' %}<i class="bi bi-check2-all text-blue-500"></i>{% else %}<i class="bi bi-check2"></i>{% endif %}
+                      </div>
                     {% endif %}
 
-                    {% if message.sent_by_user %}
-                      <span class="text-secondary small">
-                      {{ message.sent_by_user.email }}
-                      </span>
-                    {% endif %}
                   </div>
-
-                  <div class="text-secondary small">
-                    <i class="bi bi-clock me-1"></i>
-                    {{ message.created_at|date:"D/M/A | H:i" }}
+                {% endfor %}
+              {% else %}
+                <div class="flex flex-col items-center justify-center h-full text-center p-8 text-gray-400 opacity-80">
+                  <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-[0_4px_15px_rgba(0,0,0,0.03)] border border-gray-100">
+                    <i class="bi bi-chat-square-text text-3xl text-gray-300"></i>
                   </div>
-
+                  <div class="text-[1.1rem] font-extrabold text-gray-600 mb-2">No hay mensajes registrados</div>
+                  <div class="text-[0.85rem] font-medium max-w-sm mx-auto p-0">Esta conversación aún no tiene ningún historial disponible para mostrar.</div>
                 </div>
+              {% endif %}
+            </div>
+          </div>
 
-                <div>
-                  {{ message.content }}
+          <div class="lg:col-span-4 flex flex-col gap-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+              <h2 class="font-extrabold text-gray-800 text-[0.95rem] mb-4 flex items-center border-b border-gray-100 pb-3">
+                <i class="bi bi-info-circle text-blue-500 mr-2 text-lg"></i> Información
+              </h2>
+              
+              <div class="bg-blue-50/50 border border-blue-100 rounded-lg p-4 mb-4">
+                <div class="font-bold text-blue-800 text-[0.8rem] mb-1.5 flex items-center">
+                  <i class="bi bi-eye mr-1.5"></i> Vista de Solo lectura
                 </div>
-
-                <div class="text-secondary small">
-                  Estado: {{ message.delivery_status|default:"Sin estado" }}
+                <div class="text-blue-600/80 text-[0.75rem] leading-relaxed">
+                  Las respuestas a usuarios se envían desde WhatsApp a través del workflow de n8n. Esta vista solo muestra historial, estado y actividad.
                 </div>
-
               </div>
 
-            {% endfor %}
-
-          </div>
-
-        {% else %}
-
-          <div class="glass p-4 text-center">
-            <div class="mb-2">
-              <i class="bi bi-chat-square-text next"></i>
+              <div class="bg-gray-50 border border-gray-100 rounded-lg p-4">
+                {% if conversation_is_open %}
+                  <div class="flex items-center text-green-600 font-bold text-[0.8rem]">
+                    <i class="bi bi-unlock mr-2 text-lg"></i> Estado: Abierta
+                  </div>
+                  <div class="text-gray-500 text-[0.7rem] mt-1 ml-6">
+                    La conversación está abierta en el canal externo.
+                  </div>
+                {% else %}
+                  <div class="flex items-center text-gray-600 font-bold text-[0.8rem]">
+                    <i class="bi bi-lock mr-2 text-lg text-gray-400"></i> Estado: Cerrada
+                  </div>
+                  <div class="text-gray-500 text-[0.7rem] mt-1 ml-6">
+                    La conversación se cerró de acuerdo a las reglas del canal.
+                  </div>
+                {% endif %}
+              </div>
             </div>
-            <div class="h5 fw-semibold mb-2">No hay mensajes registrados</div>
-            <div class="text-secondary">
-              Esta conversación no tiene historial.
-            </div>
           </div>
 
-        {% endif %}
-
-      </div>
-
-    </div>
-
-
-    <div class="col-12 col-xl-4">
-
-      <div class="glass p-4">
-
-        <h2 class="h5 fw-semibold mb-3">Vista del dashboard
-        </h2>
-
-        <div class="glass p-4">
-
-          <div class="fw-semibold mb-2">
-            <i class="bi bi-eye me-1"></i> Solo lectura
-          </div>
-
-          <div class="text-secondary small mb-3">
-            Las respuestas a usuarios se envían desde WhatsApp a través del workflow de n8n.
-            Esta vista solo muestra historial, estado y actividad.
-          </div>
-
-          <div class="text-secondary small">
-
-            {% if conversation_is_open %}
-              <i class="bi bi-unlock me-1"></i>
-              La conversación está abierta en el canal externo.
-            {% else %}
-              <i class="bi bi-lock me-1"></i>
-              La conversación está cerrada en el canal externo.
-            {% endif %}
-
-          </div>
         </div>
+
       </div>
-    </div>
+    </main>
   </div>
-</section>
+</div>
+
+<script>
+  /* 
+   * [Script Autorizado - UI]
+   * Controla la apertura y cierre del menú lateral principal en vista móvil para el dashboard.
+   */
+  function toggleMobileMenu() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+  }
+
+  /* 
+   * [Script Autorizado - UI]
+   * Desplaza automáticamente el scroll al final del historial de la conversación.
+   */
+  // Auto-scroll to bottom of chat
+  const chatContainer = document.querySelector('.overflow-y-auto.flex-grow');
+  if (chatContainer) {
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  }
+</script>
 {% endblock %}

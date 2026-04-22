@@ -3,6 +3,8 @@
 
 {% block title %}Cocobots by Datadicoco{% endblock %}
 
+{% block body_class %}page-index{% endblock %}
+
 {% block navbar_buttons %}
 <a class="text-gray-600 hover:text-orange-500 font-semibold text-sm transition mx-3"
   href="{% url 'core:login' %}">Iniciar Sesión</a>
@@ -11,33 +13,7 @@
 {% endblock %}
 
 {% block content %}
-<style>
-  .nav-glass {
-    background-color: rgba(255, 255, 255, 0.9) !important;
-    backdrop-filter: blur(10px) !important;
-    border-bottom: 1px solid #f1f5f9;
-    box-shadow: none !important;
-  }
 
-  .btn-glass {
-    display: none;
-  }
-
-  .bg-blobs {
-    display: none;
-  }
-
-  body {
-    background-color: #f8fafc;
-    font-family: 'Inter', system-ui, sans-serif;
-  }
-
-  .glass {
-    background: white;
-    border: 1px solid #f1f5f9;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  }
-</style>
 <section class="relative pt-20 pb-32 overflow-hidden bg-gradient-to-b from-blue-50/50 to-white">
   <div class="container mx-auto px-4 max-w-7xl">
     <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-8">
@@ -288,6 +264,11 @@
 </section>
 
 <script>
+  /* 
+   * [Script Autorizado - Funcionalidad]
+   * Genera dinámicamente un enlace mailto prellenado para solicitudes 
+   * de nuevos clientes desde la landing page sin procesar datos en servidor.
+   */
   function sendMail(e) {
     e.preventDefault();
     const name = document.getElementById("name").value;

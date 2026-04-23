@@ -17,7 +17,7 @@
       <div class="flex items-center">
         <img src="{% static 'img/logo.png' %}" alt="Datadicoco" class="h-8 object-contain"
           onerror="this.src='https://cdn-icons-png.flaticon.com/512/10412/10412629.png'">
-        <h2 class="text-xl font-bold text-gray-800 ml-2 pt-1" style="color: #ea4335;">Datadicoco</h2>
+        <h2 class="text-xl font-bold text-gray-800 ml-2 pt-1 text-brand-orange">Datadicoco</h2>
       </div>
       <button class="md:hidden text-gray-400 hover:text-red-500" onclick="toggleMobileMenu()">
         <i class="bi bi-x-lg text-xl"></i>
@@ -120,7 +120,7 @@
             <div class="text-[0.65rem] text-gray-400 truncate max-w-[120px]">{{ request.user.email }}</div>
           </div>
 
-          <form method="post" action="{% url 'core:logout' %}" style="display: inline-block;">
+          <form method="post" action="{% url 'core:logout' %}" class="d-inline-block-form">
             {% csrf_token %}
             <button type="submit" class="text-gray-400 hover:text-red-500 transition py-1 md:px-1"
               title="Cerrar sesión">

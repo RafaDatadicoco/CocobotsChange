@@ -543,3 +543,28 @@ body.page-dashboard {
   background-color: #cbd5e1;
   border-radius: 10px;
 }
+
+/* Utility classes replacing inline styles */
+.text-brand-orange {
+  color: #ea4335 !important;
+}
+
+.tracking-brand-wide {
+  letter-spacing: 0.05em !important;
+}
+
+.animate-duration-3s {
+  animation-duration: 3s !important;
+}
+
+.rotate-minus-15 {
+  transform: rotate(-15deg) !important;
+}
+
+.text-size-30rem {
+  font-size: 30rem !important;
+}
+
+.d-inline-block-form {
+  display: inline-block !important;
+}
